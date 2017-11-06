@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchor" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.MainMenuController">
+   <children>
+      <ImageView fitHeight="602.0" fitWidth="896.0">
+         <image>
+            <Image url="@images/home_Screen.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="tankImage" fitHeight="44.0" fitWidth="71.0" layoutX="459.0" layoutY="321.0">
+         <image>
+            <Image url="@images/option_selector.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="playImage" fitHeight="79.0" fitWidth="173.0" layoutX="529.0" layoutY="301.0">
+         <image>
+            <Image url="@images/play_btn.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="settingsImage" fitHeight="62.0" fitWidth="200.0" layoutX="530.0" layoutY="365.0">
+         <image>
+            <Image url="@images/settings_btn_1.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="helpImage" fitHeight="127.0" fitWidth="200.0" layoutX="516.0" layoutY="396.0">
+         <image>
+            <Image url="@images/help_btn_1.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="highscoreImage" fitHeight="41.0" fitWidth="200.0" layoutX="530.0" layoutY="472.0">
+         <image>
+            <Image url="@images/high_score_btn_1.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="creditsImage" fitHeight="64.0" fitWidth="200.0" layoutX="529.0" layoutY="513.0">
+         <image>
+            <Image url="@images/credits_btn_1.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>
