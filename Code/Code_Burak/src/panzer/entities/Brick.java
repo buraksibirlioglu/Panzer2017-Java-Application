@@ -8,8 +8,11 @@ package panzer.entities;
 import java.util.ArrayList;
 import javafx.scene.image.Image;
 
+/**
+ *
+ * @author Ndricim Rrapi
+ */
 public class Brick extends GameObject{
-
     private int life;
     private int type;
     public Brick(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, int _speed, ArrayList<Image> _icon) {
@@ -25,4 +28,5 @@ public class Brick extends GameObject{
         this.life=life;
     }
       
+    
 }

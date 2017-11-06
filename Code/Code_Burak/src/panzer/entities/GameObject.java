@@ -5,6 +5,7 @@
  */
 package panzer.entities;
 
+import java.awt.Rectangle;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import javafx.animation.Transition;
@@ -22,35 +23,97 @@ public class GameObject {
     private double coordinateX;  
     private double coordinateY;
     private double    speed;
+    private int width;
+    private int height;
     private ArrayList<Image> icon = new ArrayList<>();
     private ImageView objectView  ;
     private TranslateTransition animation;
+    private Image currImage;
+    private boolean movingParent;
+    private boolean movingNew;
 
-  
-   
-    public GameObject(boolean _isAlive, double  _coordinateX, double  _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon){
+
+ 
+    protected double speedX;
+    protected double speedY;
+
+    public GameObject(boolean _isAlive, double _coordinateX, double  _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon){
         alive = _isAlive;   
         speed = _speed;
-        icon = _icon;
-        objectView = new ImageView();
-        setImg(0);
-        objectView.setFitHeight(height);
-        objectView.setFitWidth(width);         
-        objectView.setLayoutX(_coordinateX);
-        objectView.setLayoutY(_coordinateY);
+        icon  = _icon;       
+        objectView = new ImageView(_icon.get(0));
+        currImage = _icon.get(0);
+        coordinateX = _coordinateX;
+        coordinateY = _coordinateY;
+        this.height = height;
+        this.width = width;
+        movingParent= false;
         animation = new TranslateTransition(Duration.millis(speed));
     }
+
+    public void setMovingParent(boolean movingParent) {
+        this.movingParent = movingParent;
+    }
     
-      public TranslateTransition getAnimation() {
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
+
+    public void setSpeedY(double speedY) {
+        this.speedY = speedY;
+    }
+    
+     public void update(int endOfMapX){
+         if(endOfMapX ==2){             
+            coordinateX  -= speedX*2;
+            coordinateY  = 555;// -= speedY*2;
+         }
+         else if (endOfMapX ==1){
+            coordinateX  += speedX;
+            coordinateY  += speedY;
+         }
+         else if (endOfMapX == 3){
+               coordinateX  = 0;
+         }
+          else if (endOfMapX == 4){
+               coordinateY  = 0;
+         } else if (endOfMapX == 5){
+               coordinateX  = 958;
+         }
+       // movingParent = movingNew;
+    } 
+
+    public boolean isMovingParent() {
+        return movingParent;
+    }
+     
+    public void setMovingNew(boolean movingNew) {
+        this.movingNew = movingNew;
+    }
+    
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    public TranslateTransition getAnimation() {
         return animation;
     }
     
-
     public ImageView getObjectView() {
         return objectView;
     }
-     
     
+    public Image getImg() {
+        return currImage;
+    }
+    public void setImg (int num){
+        currImage  = icon.get(num);
+    }
+         
     public boolean isAlive() {
         return alive;
     }
@@ -75,22 +138,27 @@ public class GameObject {
         this.alive = alive;
     }
 
-    public void setCoordinateX(double coordinateX) {
+    public void setCoordinateX(float coordinateX) {
         this.coordinateX = coordinateX;
     }
 
-    public void setCoordinateY(double coordinateY) {
+    public void setCoordinateY(float coordinateY) {
         this.coordinateY = coordinateY;
     }
 
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-
-    public void setImg (int num){
-        objectView.setImage(icon.get(num));
+    
+    public boolean collisionCheck(GameObject obj) {
+        if (this instanceof PlayerTank && obj instanceof Brick){
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , 40 , 40);
+            if(rectOne.intersects(rectTwo))
+               return true;
+        }
+        return false;
     }
+   
     
-    
-        
 }

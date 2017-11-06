@@ -4,9 +4,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anchor" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.MainMenuController">
+<AnchorPane fx:id="anchor" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.MainMenuController">
    <children>
-      <ImageView fitHeight="602.0" fitWidth="896.0">
+      <ImageView fitHeight="600.0" fitWidth="900.0">
          <image>
             <Image url="@images/home_Screen.jpg" />
          </image>

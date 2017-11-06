@@ -10,26 +10,24 @@ import javafx.scene.image.Image;
 
 /**
  *
- * @author Burak
+ * @author Ndricim Rrapi
  */
-public class Castle extends GameObject {
+public class Castle extends GameObject{
+    
     private int life;
     private int type;
-    public Castle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon,int life,int type) {
+    
+    public Castle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon,int life) {
         super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);
         this.life=life;
-        this.type=type;
-        if(type==1)
-            setImg(0);
-        if(type==2)
-            setImg(1);
     }
-    public int getLife()
-    {
-    return life;
+    
+    public int getLife() {
+        return life;
     }
-    public void setLife(int life)
-    {
-    this.life=life;
+    
+    public void setLife(int life) {
+        this.life=life;
     }
+    
 }
