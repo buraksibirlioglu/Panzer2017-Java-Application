@@ -48,8 +48,12 @@ public class GameEngine {
     ArrayList<GameObject> allObjectsList ;
     ArrayList<Castle> castleList;
     Map map;
+    Image imageEnemy;
     ArrayList<Bullet> bulletList;
-
+            
+    int point;
+    int time;
+  boolean drawBottomBar = true;
   
             
    // Constructor   
@@ -79,7 +83,7 @@ public class GameEngine {
 //        for (int i = 0; i < getBulletList().size(); i++){
 //            allObjectsList.add(getBulletList().get(i));
 //        }
-         
+         setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy1.png").toExternalForm(),250,40,false,false));
         castleList = createCastles();
         allObjectsList.add(castleList.get(0));
         allObjectsList.add(castleList.get(1));
@@ -95,9 +99,9 @@ public class GameEngine {
         castle=new ArrayList<>();
         castleImage.add(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),40,60,false,false));
         castleImage.add(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),40,60,false,false));
-        PlayerCastle C = new PlayerCastle(true, 0, 250,60, 60, 0,castleImage,50); // player castle
+        PlayerCastle C = new PlayerCastle(true, 0, 250,60, 60, 0,castleImage,60); // player castle
         castle.add(C);
-        EnemyCastle  enemy =new EnemyCastle(true, 959, 250,60, 60, 0,castleImage,50); // enemy 
+        EnemyCastle  enemy =new EnemyCastle(true, 959, 250,60, 60, 0,castleImage,60); // enemy 
         castle.add(enemy);
         return castle;
     }
@@ -224,7 +228,10 @@ public class GameEngine {
             }
         }
     }
-  
+   
+    public void setImageEnemy(Image img){
+        imageEnemy = img;
+    }
     public class MyAnimationTimer extends AnimationTimer{
         Canvas thisCanvas;
     
@@ -232,18 +239,17 @@ public class GameEngine {
         boolean right = false;
         int bonusCount = 100;
         GraphicsContext gc ;
-        int point;
-        int time;
-       
         long oldNanoTime = System.nanoTime();
+        
         
         @Override
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
-            gc.clearRect(0, 0, 1000, 650);
-            drawAllObjectsOnScren(gc,point,time);
-            handleCollision();
-         
+            gc.clearRect(0, 0, 1000, 600);
+             handleCollision();
+            drawAllObjectsOnScren(gc,point,time,drawBottomBar);
+           
+            drawBottomBar = false;
 //            System.out.println("X=" + playerTank.getCoordinateX() );
 //            System.out.println("Y=" + playerTank.getCoordinateY() );
                if(playerTank.getCoordinateY() <= 555 && playerTank.getCoordinateX() >= 0  && playerTank.getCoordinateY() >=0  && playerTank.getCoordinateX() <=958){
@@ -268,17 +274,17 @@ public class GameEngine {
                         }
                     }else if (playerTank.getDirection() == 1){
                         if( playerTank.getMyBullet() != null){
-                            System.out.println("not deleted yet");
+                         //   System.out.println("not deleted yet");
                             playerTank.getMyBullet().setCoordinateY(playerTank.getMyBullet().getCoordinateY()+playerTank.getMyBullet().getSpeedY());
                         }
                     }else if (playerTank.getDirection() == 2){
                         if( playerTank.getMyBullet() != null){
-                            System.out.println("not deleted yet");
+                          //  System.out.println("not deleted yet");
                             playerTank.getMyBullet().setCoordinateX(playerTank.getMyBullet().getCoordinateX()+playerTank.getMyBullet().getSpeedX());
                         }
                     }else if (playerTank.getDirection() == 3){
                         if( playerTank.getMyBullet() != null){
-                            System.out.println("not deleted yet");
+                           // System.out.println("not deleted yet");
                             playerTank.getMyBullet().setCoordinateX(playerTank.getMyBullet().getCoordinateX()+playerTank.getMyBullet().getSpeedX());
                         }
                     }
@@ -295,25 +301,34 @@ public class GameEngine {
         }
         
       
-        public void drawAllObjectsOnScren(GraphicsContext g,int point,int time){
+        public void drawAllObjectsOnScren(GraphicsContext g,int point,int time, boolean drawKings){
+           g.clearRect(345, 605, 345, 100); 
            for(int i = 0; i < getAllObjectsList().size() ; i++){
                 GameObject o = getAllObjectsList().get(i);
 			if(o.isAlive()){
                             g.drawImage(o.getImg(), (int)(o.getCoordinateX()) , (int)(o.getCoordinateY()));                       
                         }
 		}
-            g.setStroke(Color.RED);
-            g.setLineWidth(2);
-            g.strokeLine(0, 601, 1000, 601);
-            g.drawImage(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),30,40,false,false), 15, 605);
-            g.drawImage(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),30,40,false,false), 955, 605);
-            g.drawImage(new Image(Panzer2017.class.getResource("images/health.png").toExternalForm(),250,40,false,false), 60, 605);
-            g.drawImage(new Image(Panzer2017.class.getResource("images/health.png").toExternalForm(),250,40,false,false), 690, 605);
+           
             g.setFill(Color.WHITE);
             g.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
+            System.out.println(point);
             g.fillText("Points : "+point , 345, 635);
             g.drawImage(new Image(Panzer2017.class.getResource("images/power_freeze.png").toExternalForm(),40,40,false,false), 500, 605);
             g.fillText(time+" s " , 555, 635);
+            
+           if(drawKings){
+            g.setStroke(Color.RED);
+            g.setLineWidth(1);
+            g.strokeLine(0, 601, 1000, 601);
+            g.drawImage(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),30,40,false,false), 15, 605);
+            g.drawImage(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),30,40,false,false), 955, 605);
+           
+               System.out.println("do it agaaaaain");
+            g.drawImage(new Image(Panzer2017.class.getResource("images/health_bar_king1.png").toExternalForm(),250,40,false,false), 60, 605);
+            g.drawImage(imageEnemy, 690, 605);
+            
+           }
         }
         
         public void setGraphics(GraphicsContext c){
@@ -344,15 +359,43 @@ public class GameEngine {
                                                  b.setSpeedY(0);
                                                 System.out.println("shotttt");
                                                 allObjectsList.remove(j);
+                                                point++;
 //                                                allObjectsList.remove(i);
                                                 MediaPlayer mediaPlayer;
                                                 Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
                                                 mediaPlayer = new MediaPlayer(sound);  
                                                 mediaPlayer.play();
-                                                
-                                                
-					}
-                                    
+                        }
+                         if(obj1 instanceof Bullet && obj2 instanceof Castle){
+                            //if(obj2 instanceof GrassTile) continue;
+                            if (obj1.isAlive()){
+                                EnemyCastle temp = (EnemyCastle)obj2;
+                                System.out.println("life=" + temp.getLife());
+                                temp.setLife(temp.getLife()-10);
+                                obj1.setAlive(false);
+                                Bullet b = (Bullet)obj1;
+                                b.setSpeedX(0);
+                                b.setSpeedY(0);
+                                System.out.println("done---------");
+                                drawBottomBar = true;
+                                if (temp.getLife() == 50)
+                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy2.png").toExternalForm(),250,40,false,false));
+                                else if (temp.getLife() == 40)
+                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy3.png").toExternalForm(),250,40,false,false));
+                                else if (temp.getLife() == 30)
+                                     setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy4.png").toExternalForm(),250,40,false,false));
+                                else if (temp.getLife() == 20)
+                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy5.png").toExternalForm(),250,40,false,false));
+                                else if (temp.getLife() == 10)
+                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy6.png").toExternalForm(),250,40,false,false));
+                                else if (temp.getLife() == 0){
+                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy_empty.png").toExternalForm(),250,40,false,false));
+                                    temp.setAlive(false);
+                                    allObjectsList.remove(j);
+                                }
+                            
+                            }
+                            }  
                     }
             }
         }
