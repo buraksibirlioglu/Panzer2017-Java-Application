@@ -5,7 +5,6 @@
  */
 package panzer.pkg2017;
 
-
 import panzer.entities.Tank;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.paint.Color;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -41,16 +39,12 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javax.swing.ImageIcon;
 import panzer.entities.EnemyTank;
 import panzer.brainClass.GameEngine;
 import panzer.brainClass.GameEngine.HandleKeyPressed;
@@ -70,7 +64,7 @@ public class GamePanel extends Scene{
      String another;
     
     public GamePanel( Group root,Stage p) throws IOException {
-        super(root,1000,650,Color.YELLOW);  
+        super(root,1000,650,Color.BLACK);  
         startGame(root,p);
     }
     
@@ -92,20 +86,23 @@ public class GamePanel extends Scene{
                 app_stage.show();
             }
         });
-        VBox gameBox = new VBox();            
-        GameEngine engine = new GameEngine(); // initialize all default objects         
+        VBox gameBox = new VBox();
+      
+        GameEngine engine = new GameEngine(); // initialize all default objects      
+   
         gameBox.setBorder(new Border(new BorderStroke(Color.RED,  BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2, 2, 2, 2, false, false, false, false))));
         Canvas canvas = new Canvas(1000,650);
         gameBox.getChildren().add(canvas);
         GraphicsContext g = canvas.getGraphicsContext2D();
         engine.initializeLevel1();
-        g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-              
+        g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());       
+       
         this.setOnKeyPressed(engine.new HandleKeyPressed());
         this.setOnKeyReleased(engine.new HandleKeyReleased());
         engine.timer.setGraphics(g);
         engine.timer.start();
-        root.getChildren().add(gameBox);  
+        root.getChildren().add(gameBox);
+  
     }
     
     public void animateBonuses(ArrayList<Bonus> bonus){

@@ -35,6 +35,14 @@ public class GameObject {
 
  
     protected double speedX;
+
+    public double getSpeedX() {
+        return speedX;
+    }
+
+    public double getSpeedY() {
+        return speedY;
+    }
     protected double speedY;
 
     public GameObject(boolean _isAlive, double _coordinateX, double  _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon){
@@ -79,6 +87,8 @@ public class GameObject {
                coordinateY  = 0;
          } else if (endOfMapX == 5){
                coordinateX  = 958;
+         }else if (endOfMapX == 6){
+             coordinateY += speedY;
          }
        // movingParent = movingNew;
     } 
@@ -138,11 +148,11 @@ public class GameObject {
         this.alive = alive;
     }
 
-    public void setCoordinateX(float coordinateX) {
+    public void setCoordinateX(double coordinateX) {
         this.coordinateX = coordinateX;
     }
 
-    public void setCoordinateY(float coordinateY) {
+    public void setCoordinateY(double coordinateY) {
         this.coordinateY = coordinateY;
     }
 
@@ -152,6 +162,12 @@ public class GameObject {
     
     public boolean collisionCheck(GameObject obj) {
         if (this instanceof PlayerTank && obj instanceof Brick){
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , 40 , 40);
+            if(rectOne.intersects(rectTwo))
+               return true;
+        }
+        if (this instanceof Bullet && obj instanceof Brick){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
             Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , 40 , 40);
             if(rectOne.intersects(rectTwo))

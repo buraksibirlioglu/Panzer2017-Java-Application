@@ -66,7 +66,6 @@ MediaPlayer mediaPlayer;
     transition.setDuration(Duration.millis(50)); 
     tankImage.requestFocus();
     tankImage.setFocusTraversable(true);
- 
     Media sound = new Media(MainMenuController.class.getResource("sound/pick.mp3").toExternalForm());
     mediaPlayer = new MediaPlayer(sound);  
     tankImage.addEventFilter(KeyEvent.KEY_PRESSED, new thisEvent() );
@@ -121,7 +120,7 @@ MediaPlayer mediaPlayer;
               
                 if(pointerPosition==0 && e.getCode()== KeyCode.ENTER){
                Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        app_stage.hide();
+                app_stage.hide();
                 try {
                     app_stage.setScene(new GamePanel(new Group(), app_stage));
                 } catch (IOException ex) {
