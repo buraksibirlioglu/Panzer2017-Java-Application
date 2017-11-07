@@ -50,6 +50,7 @@ public class GameEngine {
     Map map;
     Image imageEnemy;
     ArrayList<Bullet> bulletList;
+    int points;
   boolean drawBottomBar = true;
   
             
@@ -236,7 +237,7 @@ public class GameEngine {
         boolean right = false;
         int bonusCount = 100;
         GraphicsContext gc ;
-        int point;
+        //int point;
         int time;
         long oldNanoTime = System.nanoTime();
         
@@ -245,8 +246,9 @@ public class GameEngine {
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
             gc.clearRect(0, 0, 1000, 600);
-             handleCollision();
-            drawAllObjectsOnScren(gc,point,time,drawBottomBar);
+            handleCollision();
+            gc.clearRect(390, 0, 104, 650); 
+            drawAllObjectsOnScren(gc,points,time,drawBottomBar);
            
             drawBottomBar = false;
 //            System.out.println("X=" + playerTank.getCoordinateX() );
@@ -307,18 +309,24 @@ public class GameEngine {
                             g.drawImage(o.getImg(), (int)(o.getCoordinateX()) , (int)(o.getCoordinateY()));                       
                         }
 		}
-           if(drawKings){
-            g.setStroke(Color.RED);
+       
+            g.setFill(Color.WHITE);
+            g.setFont(Font.font("Verdana", FontWeight.LIGHT, 25));
+            g.fillText("Points :   " , 345, 635);
+            g.fillText("Points : "+point , 345, 635);
+             g.setStroke(Color.RED);
             g.setLineWidth(1);
             g.strokeLine(0, 601, 1000, 601);
+           if(drawKings){
+          
             g.drawImage(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),30,40,false,false), 15, 605);
             g.drawImage(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),30,40,false,false), 955, 605);
            
                System.out.println("do it agaaaaain");
             g.drawImage(new Image(Panzer2017.class.getResource("images/health_bar_king1.png").toExternalForm(),250,40,false,false), 60, 605);
             g.drawImage(imageEnemy, 690, 605);
-            g.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
-            g.fillText("Points : "+point , 345, 635);
+           
+           
             g.drawImage(new Image(Panzer2017.class.getResource("images/power_freeze.png").toExternalForm(),40,40,false,false), 500, 605);
             g.fillText(time+" s " , 555, 635);
            }
@@ -357,6 +365,7 @@ public class GameEngine {
                                                 Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
                                                 mediaPlayer = new MediaPlayer(sound);  
                                                 mediaPlayer.play();
+                                                points++;
                         }
                          if(obj1 instanceof Bullet && obj2 instanceof Castle){
                             //if(obj2 instanceof GrassTile) continue;
@@ -370,6 +379,7 @@ public class GameEngine {
                                 b.setSpeedY(0);
                                 System.out.println("done---------");
                                 drawBottomBar = true;
+                                points += 40;
                                 if (temp.getLife() == 50)
                                     setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy2.png").toExternalForm(),250,40,false,false));
                                 else if (temp.getLife() == 40)
