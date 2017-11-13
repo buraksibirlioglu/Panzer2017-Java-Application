@@ -402,7 +402,19 @@ public class GameEngine {
             }
         }
     }
-    
+
+
+     
+    private void showDialog( String title, String header, String content ){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+  
+         alert.setOnHidden(evt -> Platform.exit());
+        alert.show();
+    }
+
     public void decerementBulletRange() {
 		for(int i = 0 ; i < bulletList.size() ; i++){
 			bulletList.get(i).decrementBulletRange();
