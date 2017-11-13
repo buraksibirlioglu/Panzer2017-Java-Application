@@ -396,6 +396,7 @@ public class GameEngine {
                                     allObjectsList.remove(j);
     	                    c.clearRect(0, 0, 1000, 600);
                                     timer.stop();
+		   showDialog( "PANZER 2017", "Congratulations!!", "YOU WON THE GAME!" );  
                                 }
                             
                             }
