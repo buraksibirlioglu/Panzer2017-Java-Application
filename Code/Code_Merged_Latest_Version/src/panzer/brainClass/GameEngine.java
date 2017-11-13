@@ -394,6 +394,8 @@ public class GameEngine {
                                     setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy_empty.png").toExternalForm(),250,40,false,false));
                                     temp.setAlive(false);
                                     allObjectsList.remove(j);
+    	                    c.clearRect(0, 0, 1000, 600);
+                                    timer.stop();
                                 }
                             
                             }
@@ -409,9 +411,8 @@ public class GameEngine {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(header);
-        alert.setContentText(content);
-  
-         alert.setOnHidden(evt -> Platform.exit());
+        alert.setContentText(content);  
+        alert.setOnHidden(evt -> Platform.exit());
         alert.show();
     }
 
