@@ -178,22 +178,22 @@ public class GameEngine {
         return enemyTankList.get(n);
     }
     
-    public  class HandleKeyPressed implements EventHandler<KeyEvent>{  
+ public  class HandleKeyPressed implements EventHandler<KeyEvent>{  
          
         @Override
         public void handle(KeyEvent e){   
           
             switch (e.getCode()) {
-               case W :                  
+               case UP :                  
                   getPlayerTank().moveUp(false);
                   break;
-               case S:
+               case DOWN:
                   getPlayerTank().moveDown(false);
                   break;
-               case D:
+               case RIGHT:
                   getPlayerTank().moveRight(false);
                   break;
-               case A:
+               case LEFT:
                   getPlayerTank().moveLeft(false);
                   break;
                case SPACE:{
@@ -211,16 +211,16 @@ public class GameEngine {
         @Override
         public void handle(KeyEvent e){   
             switch (e.getCode()) {
-               case W:
+               case UP:
                   getPlayerTank().moveUp(true);
                   break;
-               case S:
+               case DOWN:
                   getPlayerTank().moveDown(true);
                   break;
-               case D:
+               case RIGHT:
                   getPlayerTank().moveRight(true);
                   break;
-               case A:
+               case LEFT:
                    getPlayerTank().moveLeft(true);
                   break;
             }
