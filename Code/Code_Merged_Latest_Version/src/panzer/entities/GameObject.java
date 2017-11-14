@@ -164,13 +164,13 @@ public class GameObject {
         
         if (this instanceof EnemyTank && obj instanceof PlayerTank){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
-            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()), obj.getWidth(), obj.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()+ obj.getSpeedX()) , (int)(obj.getCoordinateY()+obj.getSpeedY()), obj.getWidth(), obj.getHeight());
             if(rectOne.intersects(rectTwo))
                return true;
         }
         if (this instanceof EnemyTank && obj instanceof EnemyTank){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
-            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()), obj.getWidth(), obj.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()+ obj.getSpeedX()) , (int)(obj.getCoordinateY()+obj.getSpeedY()), obj.getWidth(), obj.getHeight());
             if(rectOne.intersects(rectTwo))
                return true;
         }
