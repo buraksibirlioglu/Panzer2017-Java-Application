@@ -593,7 +593,7 @@ public class GameEngine {
                             t.setSpeedY(0);
                             allObjectsList.remove(j);
                             MediaPlayer mediaPlayer;
-                            Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
+                            Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
                             mediaPlayer = new MediaPlayer(sound);  
                             mediaPlayer.play();
                             points+=50;
@@ -610,26 +610,34 @@ public class GameEngine {
                         PlayerTank t = (PlayerTank)obj2;
                         t.setLife(t.getLife()-1);
                          System.err.println("Shot by enemy");
+                        MediaPlayer mediaPlayer;
+                        Media sound = new Media(MainMenuController.class.getResource("sound/player_shot.mp3").toExternalForm());
+                        mediaPlayer = new MediaPlayer(sound);  
                         if(t.getLife()==4){
                             t.setIcon(t.get4LifeIconImages());
+                            mediaPlayer.play();
                         } 
                         if(t.getLife()==3){
                             t.setIcon(t.get3LifeIconImages());
+                            mediaPlayer.play();
                         }                          
                         if(t.getLife()==2){
                             t.setIcon(t.get2LifeIconImages());
+                            mediaPlayer.play();
                         }if(t.getLife()==1){
                             t.setIcon(t.get1LifeIconImages());
+                            mediaPlayer.play();
                         } 
                         if(t.getLife()==0){
                            allObjectsList.remove(j);
                            t.setAlive(false);
                             System.err.println("Shot by enemy and DIED!!");
+                            Media sound2 = new Media(MainMenuController.class.getResource("sound/game_lost.mp3").toExternalForm());
+                            mediaPlayer = new MediaPlayer(sound2);  
+                            mediaPlayer.play();
                          }
-                        MediaPlayer mediaPlayer;
-                        Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
-                        mediaPlayer = new MediaPlayer(sound);  
-                        mediaPlayer.play();
+                       
+                    
                         }
                     }
                      if(obj1 instanceof Bullet && obj2 instanceof Castle){
@@ -695,6 +703,7 @@ public class GameEngine {
         
     }
     
+    // if player tank is near , move towards him and shoot
      public void shootIfOnSight(EnemyTank shooterTank){
         double ePosX = shooterTank.getCoordinateX();
         double ePosY = shooterTank.getCoordinateY();
@@ -704,14 +713,14 @@ public class GameEngine {
             if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=24 ){              
                 shooterTank.feuer(this);
                 if((ePosX-pPosX) > 0 && (ePosX-pPosX) < 45  )
-                      shooterTank.moveInDirection(2,true); // set him to move left toward player  
+                      shooterTank.moveInDirection(2,true); // set him to stop
                 else
                       shooterTank.moveInDirection(2,false); // set him to move left toward player  
             }
             if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 24){              
                 shooterTank.feuer(this);
                 if((ePosX-pPosX) < 0  && (ePosX-pPosX) > -45)
-                    shooterTank.moveInDirection(3,true); // set him to move right toward player  
+                    shooterTank.moveInDirection(3,true); // set him to stop
                 else
                     shooterTank.moveInDirection(3,false); // set him to move right toward player  
             }
@@ -719,25 +728,22 @@ public class GameEngine {
             if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=24){
                 shooterTank.feuer(this);
                 if((ePosY-pPosY) < 0 && (ePosY-pPosY) > -45  )  
-                    shooterTank.moveInDirection(1,true); // set him to move DOWN toward player  
+                    shooterTank.moveInDirection(1,true); // set him to stop
                 else
-                    shooterTank.moveInDirection(1,false); // set him to move DOWN toward player  
-                     
+                    shooterTank.moveInDirection(1,false); // set him to move DOWN toward player                       
             }
             if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=24){
-                System.out.println("STOOOOOOOOOOOP" + (ePosY ) + "__"+ (pPosY));
                 shooterTank.feuer(this);
                 if((ePosY-pPosY) >0 && (ePosY-pPosY) < 45 ){
-                   shooterTank.moveInDirection(0,true); // set him to move UP toward player
-                   
+                   shooterTank.moveInDirection(0,true); // set him to stop                   
                 }
                 else
                     shooterTank.moveInDirection(0,false); // set him to move DOWN toward player  
             }
-        }
-             
+        }             
     }
      
+     // assist the bullet animation logic. 
     public void decerementBulletRange() {
         for(int i = 0 ; i < bulletList.size() ; i++){
             bulletList.get(i).decrementBulletRange();
