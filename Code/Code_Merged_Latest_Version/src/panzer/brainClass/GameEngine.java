@@ -7,6 +7,7 @@ package panzer.brainClass;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -195,24 +196,17 @@ public class GameEngine {
         public void handle(KeyEvent e){   
           
             switch (e.getCode()) {
-               case UP :                  
-               { getPlayerTank().moveUp(false);
-                   System.out.println("life="+ enemyTank.getLife());
-                   enemyTank.moveUp(false);}
+               case UP :  
+                getPlayerTank().moveUp(false);
                   break;
                case DOWN:
-                  getPlayerTank().moveDown(false);
-                    enemyTank.moveDown(false);
+                    getPlayerTank().moveDown(false);
                   break;
                case RIGHT:
                   getPlayerTank().moveRight(false);
-                    enemyTank.moveRight(false);
                   break;
-               case LEFT:{
+               case LEFT:
                   getPlayerTank().moveLeft(false);
-                   enemyTank.moveLeft(false);
-                   
-               }
                   break;
                case SPACE:{
                     getPlayerTank().feuer(GameEngine.this);
@@ -252,8 +246,9 @@ public class GameEngine {
         int bonusCount = 100;
         GraphicsContext gc ;
         int time;
-        long oldNanoTime = System.nanoTime();        
+        long oldNanoTime = System.nanoTime();  
         
+        long previosTime = 0;
         @Override
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
@@ -265,6 +260,15 @@ public class GameEngine {
             drawBottomBar = false;
             keepPlayerTankWithinBounds();
             keepEnemyTankWithinBounds();  
+            
+            previosTime += System.nanoTime() - oldNanoTime;
+            oldNanoTime = System.nanoTime(); // update old nano time
+            if(previosTime / 1000000.0 > 2000){
+                previosTime = 0;
+                System.out.println("time");
+                changeRoute();
+            }
+            
             
              if( playerTank.getMyBullet() != null){
                 decerementBulletRange();
@@ -358,18 +362,105 @@ public class GameEngine {
         if(enemyTank.getCoordinateY() <= 555 && enemyTank.getCoordinateX() >= 0  && enemyTank.getCoordinateY() >=0  && enemyTank.getCoordinateX() <=958){
                  enemyTank.update(1);// 1 = allows movement down
             }
-            else if (enemyTank.getCoordinateY()>=556 ) // 2 = limit movement beyond lower boundary y < 556
+            else if (enemyTank.getCoordinateY()>=556 ){ // 2 = limit movement beyond lower boundary y < 556
                 enemyTank.update(2);
-
-            else if (enemyTank.getCoordinateX() < 0 )
+                 enemyTank.moveUp(false);
+    }
+            else if (enemyTank.getCoordinateX() < 0 ){
                 enemyTank.update(3);// 3 = limit movement beyond left boundary x > 0
-
+                 enemyTank.moveRight(false);
+    }
             else if (enemyTank.getCoordinateY() < 0){
+               //  changeRoute();
                 enemyTank.update(4);// 4 = limit movement above upper boundary Y > 0
+                enemyTank.moveDown(false);
             }else if (enemyTank.getCoordinateX() >958){
                 enemyTank.update(5);// 4 = limit movement beyond right boundary x <945
+                enemyTank.moveLeft(false);
             }
     }
+   
+    public void changeRoute(){
+        Random rand = new Random();
+        int  n = rand.nextInt(900) + 1;
+        System.out.println("random = "+n);
+        if(n >= 0 && n <= 200){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveLeft(false);
+                return;
+            }   
+        }
+        else if(n > 200  && n <= 400){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveDown(false);
+                return;
+            }   
+        }
+        else if(n > 400 && n <= 600){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveUp(false);
+                return;
+            }   
+        }
+        else if(n > 600 && n <= 800){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveRight(false);
+                return;
+            }   
+        }
+        else if (n > 800 && n <= 900){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveDown(false);
+                return;
+            }   
+        }
+    }
+    
     public void handleCollision(GraphicsContext c){
         for(int i = 0 ; i < allObjectsList.size() ; i++){
             for(int j = 0 ; j < allObjectsList.size() ; j++){
@@ -387,6 +478,9 @@ public class GameEngine {
                         //if(obj2 instanceof GrassTile) continue;
                         obj1.setSpeedX(0.0f);
                         obj1.setSpeedY(0.0f);
+                       // keepEnemyTankWithinBounds();
+                       changeRoute();
+                       System.out.println("blaaaaaaaaa");
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
                         //if(obj2 instanceof GrassTile) continue;
