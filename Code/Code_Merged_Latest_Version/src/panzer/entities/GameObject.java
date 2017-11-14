@@ -198,6 +198,13 @@ public class GameObject {
             if(rectOne.intersects(rectTwo))
                return true;
         }
+        if (this instanceof Bullet && obj instanceof EnemyTank){
+           // System.out.println("hit");
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , obj.getWidth() , obj.getHeight());
+             if(rectOne.intersects(rectTwo))
+               return true;
+        }
         return false;
     }
    
