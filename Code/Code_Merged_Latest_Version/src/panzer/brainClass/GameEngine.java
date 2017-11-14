@@ -276,14 +276,15 @@ public class GameEngine {
               for (int i = 0; i < enemyTankList.size();i++)
                   keepEnemyTankWithinBounds(enemyTankList.get(i));
             
-               
+            
             previosTime += System.nanoTime() - oldNanoTime;
             oldNanoTime = System.nanoTime(); // update old nano time
             if(previosTime / 1000000.0 > 2000){           
                 System.out.println("time");
-                for (int i = 0; i < enemyTankList.size();i++)       {             
-                changeRoute(enemyTankList.get(i));//  
-            }
+                for (int i = 0; i < enemyTankList.size();i++) {  
+                    if(!playerOnSight(enemyTankList.get(i)))
+                        changeRoute(enemyTankList.get(i));//  
+                }
                 previosTime = 0;
               
                 //random enemy bullet shot 
@@ -300,6 +301,8 @@ public class GameEngine {
             
             for (int i = 0; i < enemyTankList.size();i++){
                 setBulletMotion(enemyTankList.get(i));
+               
+                shootIfOnSight( enemyTankList.get(i));
             }
         }
                 
@@ -588,7 +591,7 @@ public class GameEngine {
                             EnemyTank t = (EnemyTank)obj2;
                             t.setSpeedX(0);
                             t.setSpeedY(0);
-                             allObjectsList.remove(j);
+                            allObjectsList.remove(j);
                             MediaPlayer mediaPlayer;
                             Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
                             mediaPlayer = new MediaPlayer(sound);  
@@ -620,6 +623,7 @@ public class GameEngine {
                         } 
                         if(t.getLife()==0){
                            allObjectsList.remove(j);
+                           t.setAlive(false);
                             System.err.println("Shot by enemy and DIED!!");
                          }
                         MediaPlayer mediaPlayer;
@@ -666,6 +670,74 @@ public class GameEngine {
         }
     }
     
+    //If playerTank is near, the shooterTank will then detect and start shooting 
+    public boolean playerOnSight(EnemyTank shooterTank){
+        double ePosX = shooterTank.getCoordinateX();
+        double ePosY = shooterTank.getCoordinateY();
+        double pPosX = getPlayerTank().getCoordinateX();
+        double pPosY = getPlayerTank().getCoordinateY();
+        if(getPlayerTank().isAlive() && shooterTank.isAlive()){
+              if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=24 ){    
+                return true;
+            }
+           if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 24){  
+                return true;
+            }
+
+             if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=24){
+                return true;
+            }
+            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=24){
+                return true;
+            }
+         }
+        return false;  
+        
+    }
+    
+     public void shootIfOnSight(EnemyTank shooterTank){
+        double ePosX = shooterTank.getCoordinateX();
+        double ePosY = shooterTank.getCoordinateY();
+        double pPosX = getPlayerTank().getCoordinateX();
+        double pPosY = getPlayerTank().getCoordinateY();
+        if(getPlayerTank().isAlive() && shooterTank.isAlive()){
+            if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=24 ){              
+                shooterTank.feuer(this);
+                if((ePosX-pPosX) > 0 && (ePosX-pPosX) < 45  )
+                      shooterTank.moveInDirection(2,true); // set him to move left toward player  
+                else
+                      shooterTank.moveInDirection(2,false); // set him to move left toward player  
+            }
+            if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 24){              
+                shooterTank.feuer(this);
+                if((ePosX-pPosX) < 0  && (ePosX-pPosX) > -45)
+                    shooterTank.moveInDirection(3,true); // set him to move right toward player  
+                else
+                    shooterTank.moveInDirection(3,false); // set him to move right toward player  
+            }
+
+            if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=24){
+                shooterTank.feuer(this);
+                if((ePosY-pPosY) < 0 && (ePosY-pPosY) > -45  )  
+                    shooterTank.moveInDirection(1,true); // set him to move DOWN toward player  
+                else
+                    shooterTank.moveInDirection(1,false); // set him to move DOWN toward player  
+                     
+            }
+            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=24){
+                System.out.println("STOOOOOOOOOOOP" + (ePosY ) + "__"+ (pPosY));
+                shooterTank.feuer(this);
+                if((ePosY-pPosY) >0 && (ePosY-pPosY) < 45 ){
+                   shooterTank.moveInDirection(0,true); // set him to move UP toward player
+                   
+                }
+                else
+                    shooterTank.moveInDirection(0,false); // set him to move DOWN toward player  
+            }
+        }
+             
+    }
+     
     public void decerementBulletRange() {
         for(int i = 0 ; i < bulletList.size() ; i++){
             bulletList.get(i).decrementBulletRange();
