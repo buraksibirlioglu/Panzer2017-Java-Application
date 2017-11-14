@@ -91,11 +91,11 @@ public class GameEngine {
         castleList = createCastles();
         allObjectsList.add(castleList.get(0));
         allObjectsList.add(castleList.get(1));
-       enemyTank= createSingleEnemyTank(400);
-         allObjectsList.add(enemyTank);
-//        for (int i = 0; i < enemyTankList.size(); i++){
-//            allObjectsList.add(enemyTankList.get(i));
-//        }
+     //  enemyTank= createSingleEnemyTank(400);
+        // allObjectsList.add(enemyTank);
+        for (int i = 0; i < enemyTankList.size(); i++){
+            allObjectsList.add(enemyTankList.get(i));
+        }
     }
     
     // type = 1 = playerCastle ,
@@ -161,9 +161,9 @@ public class GameEngine {
     
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
-     ///   enemies.add(createSingleEnemyTank(200));
-        enemies.add(createSingleEnemyTank(400));
-     //   enemies.add(createSingleEnemyTank(300));
+        enemies.add(createSingleEnemyTank(200));
+        enemies.add(createSingleEnemyTank(300));
+        enemies.add(createSingleEnemyTank(390));
         return enemies;
     }
     
@@ -253,20 +253,24 @@ public class GameEngine {
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
             gc.clearRect(0, 0, 1000, 600);
-            handleCollision(gc);
+         
             gc.clearRect(390, 0, 104, 650); 
             drawAllObjectsOnScren(gc,points,time,drawBottomBar);
           //enemyTank.update(1);
             drawBottomBar = false;
             keepPlayerTankWithinBounds();
-            keepEnemyTankWithinBounds();  
+              for (int i = 0; i < enemyTankList.size();i++)
+                  keepEnemyTankWithinBounds(enemyTankList.get(i));
             
+               handleCollision(gc);
             previosTime += System.nanoTime() - oldNanoTime;
             oldNanoTime = System.nanoTime(); // update old nano time
             if(previosTime / 1000000.0 > 2000){
                 previosTime = 0;
                 System.out.println("time");
-                changeRoute();
+                for (int i = 0; i < enemyTankList.size();i++)
+                  changeRoute(enemyTankList.get(i));
+                
             }
             
             
@@ -358,7 +362,7 @@ public class GameEngine {
             }
     }
     
-    public void keepEnemyTankWithinBounds(){
+    public void keepEnemyTankWithinBounds(EnemyTank enemyTank){
         if(enemyTank.getCoordinateY() <= 555 && enemyTank.getCoordinateX() >= 0  && enemyTank.getCoordinateY() >=0  && enemyTank.getCoordinateX() <=958){
                  enemyTank.update(1);// 1 = allows movement down
             }
@@ -380,7 +384,7 @@ public class GameEngine {
             }
     }
    
-    public void changeRoute(){
+    public void changeRoute(EnemyTank enemyTank){
         Random rand = new Random();
         int  n = rand.nextInt(900) + 1;
         System.out.println("random = "+n);
@@ -479,7 +483,8 @@ public class GameEngine {
                         obj1.setSpeedX(0.0f);
                         obj1.setSpeedY(0.0f);
                        // keepEnemyTankWithinBounds();
-                       changeRoute();
+                        for (int m = 0; m < enemyTankList.size();m++)
+                            changeRoute(enemyTankList.get(m));
                        System.out.println("blaaaaaaaaa");
                     }
                     if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){
@@ -487,7 +492,8 @@ public class GameEngine {
                        // obj1.setSpeedX(0.0f);
                       //  obj1.setSpeedY(0.0f);
                        // keepEnemyTankWithinBounds();
-                       changeRoute();
+                        for (int m = 0; m < enemyTankList.size();m++)
+                            changeRoute(enemyTankList.get(m));
                        System.out.println("enemy touched");
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
