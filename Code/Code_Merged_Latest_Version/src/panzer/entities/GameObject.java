@@ -162,7 +162,13 @@ public class GameObject {
     
     public boolean collisionCheck(GameObject obj) {
         
-         if (this instanceof EnemyTank && obj instanceof PlayerTank){
+        if (this instanceof EnemyTank && obj instanceof PlayerTank){
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()), obj.getWidth(), obj.getHeight());
+            if(rectOne.intersects(rectTwo))
+               return true;
+        }
+        if (this instanceof EnemyTank && obj instanceof EnemyTank){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
             Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()), obj.getWidth(), obj.getHeight());
             if(rectOne.intersects(rectTwo))
