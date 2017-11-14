@@ -161,6 +161,12 @@ public class GameObject {
     }
     
     public boolean collisionCheck(GameObject obj) {
+       if (this instanceof EnemyTank && obj instanceof Brick){
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , 40 , 40);
+            if(rectOne.intersects(rectTwo))
+               return true;
+        } 
         if (this instanceof PlayerTank && obj instanceof Brick){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
             Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , 40 , 40);
