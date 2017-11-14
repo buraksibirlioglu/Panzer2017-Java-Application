@@ -482,6 +482,14 @@ public class GameEngine {
                        changeRoute();
                        System.out.println("blaaaaaaaaa");
                     }
+                    if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){
+                        //if(obj2 instanceof GrassTile) continue;
+                       // obj1.setSpeedX(0.0f);
+                      //  obj1.setSpeedY(0.0f);
+                       // keepEnemyTankWithinBounds();
+                       changeRoute();
+                       System.out.println("enemy touched");
+                    }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
                         //if(obj2 instanceof GrassTile) continue;
                         obj2.setAlive(false);
