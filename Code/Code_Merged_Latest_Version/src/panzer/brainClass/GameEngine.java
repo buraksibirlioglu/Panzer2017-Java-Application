@@ -247,8 +247,9 @@ public class GameEngine {
         GraphicsContext gc ;
         int time;
         long oldNanoTime = System.nanoTime();  
-        
+        long oldNanoTime1 = System.nanoTime(); 
         long previosTime = 0;
+        long previosTime1 = 0;
         @Override
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
@@ -256,23 +257,35 @@ public class GameEngine {
          
             gc.clearRect(390, 0, 104, 650); 
             drawAllObjectsOnScren(gc,points,time,drawBottomBar);
+          
+            
+             previosTime1 += System.nanoTime() - oldNanoTime;
+            oldNanoTime1 = System.nanoTime(); // update old nano time
+            if(previosTime1 / 1000000.0 > 8){
+                previosTime1 = 0;
+             //   System.out.println("time");
+                handleCollision(gc); 
+                  drawAllObjectsOnScren(gc,points,time,drawBottomBar);                         
+            }
+            
           //enemyTank.update(1);
             drawBottomBar = false;
             keepPlayerTankWithinBounds();
               for (int i = 0; i < enemyTankList.size();i++)
                   keepEnemyTankWithinBounds(enemyTankList.get(i));
             
-               handleCollision(gc);
+               
             previosTime += System.nanoTime() - oldNanoTime;
             oldNanoTime = System.nanoTime(); // update old nano time
-            if(previosTime / 1000000.0 > 2000){
-                previosTime = 0;
+            if(previosTime / 1000000.0 > 2000){           
                 System.out.println("time");
                 for (int i = 0; i < enemyTankList.size();i++)
-                  changeRoute(enemyTankList.get(i));
-                
+                    
+                changeRoute(enemyTankList.get(i));//       
+                previosTime = 0;
             }
             
+           
             
              if( playerTank.getMyBullet() != null){
                 decerementBulletRange();
@@ -386,8 +399,8 @@ public class GameEngine {
    
     public void changeRoute(EnemyTank enemyTank){
         Random rand = new Random();
-        int  n = rand.nextInt(900) + 1;
-        System.out.println("random = "+n);
+        int  n = rand.nextInt(1500) + 1;
+      //  System.out.println("random = "+n);
         if(n >= 0 && n <= 200){
             if(enemyTank.getDirection()==0){//up
                 enemyTank.moveDown(false);
@@ -474,27 +487,36 @@ public class GameEngine {
                 GameObject obj2 = allObjectsList.get(j);
                 if(allObjectsList.get(i).collisionCheck(allObjectsList.get(j))){
                    if(obj1 instanceof PlayerTank && obj2 instanceof Brick){
-                        //if(obj2 instanceof GrassTile) continue;
                         obj1.setSpeedX(0.0f);
                         obj1.setSpeedY(0.0f);
                     }  
                    if(obj1 instanceof EnemyTank && obj2 instanceof Brick){
-                        //if(obj2 instanceof GrassTile) continue;
                         obj1.setSpeedX(0.0f);
-                        obj1.setSpeedY(0.0f);
-                       // keepEnemyTankWithinBounds();
-                        for (int m = 0; m < enemyTankList.size();m++)
-                            changeRoute(enemyTankList.get(m));
-                       System.out.println("blaaaaaaaaa");
+                        obj1.setSpeedY(0.0f);   
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() <=-38){
+                           obj1.setCoordinateX(obj1.getCoordinateX()-1);
+                            System.out.println("enemy left block right");
+                        }
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >=40){
+                           obj1.setCoordinateX(obj1.getCoordinateX()+1);
+                            System.out.println("enemy right block left");
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() <=-38){
+                           obj1.setCoordinateY(obj1.getCoordinateY()-1);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=40){
+                           obj1.setCoordinateY(obj1.getCoordinateY()+1);
+                        }
+                        changeRoute((EnemyTank)obj1);
+                       //System.out.println("blaaaaaaaaa");
                     }
-                    if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){
-                        //if(obj2 instanceof GrassTile) continue;
-                       // obj1.setSpeedX(0.0f);
-                      //  obj1.setSpeedY(0.0f);
-                       // keepEnemyTankWithinBounds();
-                        for (int m = 0; m < enemyTankList.size();m++)
-                            changeRoute(enemyTankList.get(m));
-                       System.out.println("enemy touched");
+                    if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){   
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >= 38){
+                           obj1.setCoordinateX(obj1.getCoordinateX()+5);
+                            obj2.setCoordinateX(obj2.getCoordinateX()-5);
+                        }
+                        changeRoute((EnemyTank)obj1);
+                        System.out.println("enemy touched");
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
                         //if(obj2 instanceof GrassTile) continue;
@@ -569,11 +591,5 @@ public class GameEngine {
        // ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(icon);
          alert.setOnHidden(evt -> Platform.exit());
         alert.show();
-    }
-        
+    }        
 }
-         
-              
-        
-    
-
