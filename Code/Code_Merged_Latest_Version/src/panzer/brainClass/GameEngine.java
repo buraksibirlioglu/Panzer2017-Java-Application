@@ -162,22 +162,22 @@ public class GameEngine {
     
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
-        enemies.add(createSingleEnemyTank(150));
-        enemies.add(createSingleEnemyTank(190));
-        enemies.add(createSingleEnemyTank(230));
-        enemies.add(createSingleEnemyTank(270));
-        enemies.add(createSingleEnemyTank(310));
-        enemies.add(createSingleEnemyTank(350));
+        enemies.add(createSingleEnemyTank(820,250));
+        enemies.add(createSingleEnemyTank(800,350));
+        enemies.add(createSingleEnemyTank(850,400));
+        enemies.add(createSingleEnemyTank(800,150));
+        enemies.add(createSingleEnemyTank(810,50));
+        enemies.add(createSingleEnemyTank(850,450));
         return enemies;
     }
     
-    private EnemyTank createSingleEnemyTank(float x){
+    private EnemyTank createSingleEnemyTank(float x, float y){
         ArrayList<Image> icon = new ArrayList<>();
         icon.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm(),38,38,false,false));
         icon.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
         icon.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
         icon.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
-        EnemyTank temp = new EnemyTank(true, x, 300,38, 38,5, icon,21);
+        EnemyTank temp = new EnemyTank(true, x, y,38, 38,5, icon,21);
         temp.getObjectView().setFocusTraversable(true);             
         return temp;
     }
@@ -710,14 +710,14 @@ public class GameEngine {
         double pPosX = getPlayerTank().getCoordinateX();
         double pPosY = getPlayerTank().getCoordinateY();
         if(getPlayerTank().isAlive() && shooterTank.isAlive()){
-            if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=24 ){              
+            if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=20 ){              
                 shooterTank.feuer(this);
                 if((ePosX-pPosX) > 0 && (ePosX-pPosX) < 45  )
                       shooterTank.moveInDirection(2,true); // set him to stop
                 else
                       shooterTank.moveInDirection(2,false); // set him to move left toward player  
             }
-            if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 24){              
+            if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 20){              
                 shooterTank.feuer(this);
                 if((ePosX-pPosX) < 0  && (ePosX-pPosX) > -45)
                     shooterTank.moveInDirection(3,true); // set him to stop
@@ -725,14 +725,14 @@ public class GameEngine {
                     shooterTank.moveInDirection(3,false); // set him to move right toward player  
             }
 
-            if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=24){
+            if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=20){
                 shooterTank.feuer(this);
                 if((ePosY-pPosY) < 0 && (ePosY-pPosY) > -45  )  
                     shooterTank.moveInDirection(1,true); // set him to stop
                 else
                     shooterTank.moveInDirection(1,false); // set him to move DOWN toward player                       
             }
-            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=24){
+            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=20){
                 shooterTank.feuer(this);
                 if((ePosY-pPosY) >0 && (ePosY-pPosY) < 45 ){
                    shooterTank.moveInDirection(0,true); // set him to stop                   
