@@ -5,8 +5,8 @@
  */
 package panzer.entities;
 
-import java.util.ArrayList;
 import javafx.scene.image.Image;
+import panzer.pkg2017.Panzer2017;
 
 /**
  *
@@ -14,18 +14,17 @@ import javafx.scene.image.Image;
  */
 public class Bullet extends GameObject{
     private int direction;
-    private double range;
-
- 
+    private double range; 
   
     Tank master;
     
-    public Bullet(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon, Tank master, int direction, int range) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);
+    public Bullet(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, Tank master, int direction, int range) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height);
         this.direction = direction;
         this.range = range;
         this.master = master;
-        
+        setCustomImg(new Image(Panzer2017.class.getResource("images/bullet.png").toExternalForm(),10,10,false,false));
+      
         if(direction == 0){ // tank looking upwards
             setCoordinateX(_coordinateX+14);
             setCoordinateY(_coordinateY);
@@ -48,6 +47,7 @@ public class Bullet extends GameObject{
             speedX = 5f;
             speedY = 0;
         }
+        
     }
         
         public Tank getBulletOwner(){
@@ -55,7 +55,7 @@ public class Bullet extends GameObject{
         }
         
         public void decrementBulletRange(){
-            range-=10;
+            range-=15;
         }
         
         public double getRange() {

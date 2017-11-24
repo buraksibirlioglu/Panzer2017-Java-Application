@@ -5,8 +5,8 @@
  */
 package panzer.entities;
 
-import java.util.ArrayList;
 import javafx.scene.image.Image;
+import panzer.pkg2017.Panzer2017;
 
 /**
  *
@@ -14,9 +14,8 @@ import javafx.scene.image.Image;
  */
 public class EnemyCastle extends Castle {
     
-    public EnemyCastle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon, int life) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon, life);
-            setImg(1);
-    }
-    
+    public EnemyCastle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, int life) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height, life);
+        setCustomImg(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),40,60,false,false));
+    }  
 }
