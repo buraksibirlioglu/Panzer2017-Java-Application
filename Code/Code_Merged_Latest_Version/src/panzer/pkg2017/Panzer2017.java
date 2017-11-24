@@ -15,6 +15,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -42,7 +43,8 @@ public class Panzer2017 extends Application implements  EventHandler<KeyEvent>  
     private int pointerPosition = 0;
     MediaPlayer mediaPlayer;
     Scene scene ;
-     
+    protected static GamePanel gamePanel;
+    
     @Override
     public void start(Stage stage) throws Exception {
         initializeImageComponents();
@@ -57,7 +59,8 @@ public class Panzer2017 extends Application implements  EventHandler<KeyEvent>  
         creditsImage     =  (ImageView) ((AnchorPane) root).getChildren().get(6);
         
         scene = new Scene(root);
-                
+                		//Initialize pane that will be used for specific scene!
+      
        // scene.setOnKeyPressed(this);   
         stage.setScene(scene);
         stage.setResizable(false);
@@ -73,43 +76,8 @@ public class Panzer2017 extends Application implements  EventHandler<KeyEvent>  
     public void initializeImageComponents(){  
         Media sound = new Media(Panzer2017.class.getResource("sound/pick.mp3").toExternalForm());
         mediaPlayer = new MediaPlayer(sound);       
-        transition.setDuration(Duration.millis(100));        
-//        tankImage        = new ImageView( new Image(Panzer2017.class.getResource("images/option_selector.png").toExternalForm()));
-//        playImage        = new ImageView(new Image(Panzer2017.class.getResource("images/play_btn.png").toExternalForm()));
-//        settingsImage    = new ImageView(new Image(Panzer2017.class.getResource("images/settings_btn_1.png").toExternalForm()));
-//        helpImage        = new ImageView(new Image(Panzer2017.class.getResource("images/help_btn_1.png").toExternalForm()));
-//        highscoreImage   = new ImageView(new Image(Panzer2017.class.getResource("images/high_score_btn_1.png").toExternalForm()));
-//        creditsImage     = new ImageView(new Image(Panzer2017.class.getResource("images/credits_btn_1.png").toExternalForm()));
-//        
-//        tankImage.setFitHeight(45);
-//        tankImage.setFitWidth(65);
-//        tankImage.setLayoutX(500);
-//        tankImage.setLayoutY(355);
-//        
-//        playImage.setFitHeight(80);
-//        playImage.setFitWidth(160);
-//        playImage.setLayoutX(560);
-//        playImage.setLayoutY(340);        
-//         
-//        settingsImage.setFitHeight(80);
-//        settingsImage.setFitWidth(160);
-//        settingsImage.setLayoutX(575);
-//        settingsImage.setLayoutY(395);
-//        
-//        helpImage.setFitHeight(80);
-//        helpImage.setFitWidth(140);
-//        helpImage.setLayoutX(565);
-//        helpImage.setLayoutY(440);
-//        
-//        highscoreImage.setFitHeight(70);
-//        highscoreImage.setFitWidth(190);
-//        highscoreImage.setLayoutX(575);
-//        highscoreImage.setLayoutY(490);
-//      
-//        creditsImage.setFitHeight(60);
-//        creditsImage.setFitWidth(150);
-//        creditsImage.setLayoutX(574);
-//        creditsImage.setLayoutY(545);
+        transition.setDuration(Duration.millis(100));       
+
     }
      @Override
     public void handle(KeyEvent e){
