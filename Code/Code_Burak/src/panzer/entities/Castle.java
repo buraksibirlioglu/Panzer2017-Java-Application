@@ -5,8 +5,6 @@
  */
 package panzer.entities;
 
-import java.util.ArrayList;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -15,11 +13,11 @@ import javafx.scene.image.Image;
 public class Castle extends GameObject{
     
     private int life;
-    private int type;
     
-    public Castle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon,int life) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);
+    public Castle(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height,int life) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height);
         this.life=life;
+       
     }
     
     public int getLife() {
@@ -29,5 +27,5 @@ public class Castle extends GameObject{
     public void setLife(int life) {
         this.life=life;
     }
-    
+   
 }

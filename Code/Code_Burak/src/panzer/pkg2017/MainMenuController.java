@@ -53,7 +53,7 @@ private ImageView tankImage;
 @FXML private ImageView playImage;
 
 private int pointerPosition=0;
-MediaPlayer mediaPlayer;
+MediaPlayer mediaPlayer, mediaPlayer1;
   TranslateTransition  transition = new TranslateTransition();
  
     /**
@@ -69,7 +69,9 @@ MediaPlayer mediaPlayer;
     Media sound = new Media(MainMenuController.class.getResource("sound/pick.mp3").toExternalForm());
     mediaPlayer = new MediaPlayer(sound);  
     tankImage.addEventFilter(KeyEvent.KEY_PRESSED, new thisEvent() );
- 
+
+    Media sound2 = new Media(MainMenuController.class.getResource("sound/selected.mp3").toExternalForm());
+    mediaPlayer1 = new MediaPlayer(sound2);  
     }    
 
    
@@ -79,6 +81,7 @@ MediaPlayer mediaPlayer;
 
             System.out.print(pointerPosition);
             if(pointerPosition==4 && e.getCode()== KeyCode.ENTER){
+                mediaPlayer1.play();
                 Parent home_page_parent = null;
                 try {
                     home_page_parent = FXMLLoader.load(getClass().getResource("Credits.fxml"));
@@ -86,12 +89,14 @@ MediaPlayer mediaPlayer;
                     Logger.getLogger(Panzer2017.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 Scene home_page_scene = new Scene(home_page_parent);
-                 Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 app_stage.hide();
                 app_stage.setScene(home_page_scene);
                 app_stage.show();
+              
             }
              if(pointerPosition==2 && e.getCode()== KeyCode.ENTER){
+                 mediaPlayer1.play();
                 Parent home_page_parent = null;
                 try {
                     home_page_parent = FXMLLoader.load(getClass().getResource("Help.fxml"));
@@ -103,8 +108,10 @@ MediaPlayer mediaPlayer;
                 app_stage.hide();
                 app_stage.setScene(home_page_scene);
                 app_stage.show();
+               
             }
               if(pointerPosition==1 && e.getCode()== KeyCode.ENTER){
+                 mediaPlayer1.play();
                 Parent home_page_parent = null;
                 try {
                     home_page_parent = FXMLLoader.load(getClass().getResource("Settings.fxml"));
@@ -116,17 +123,19 @@ MediaPlayer mediaPlayer;
                 app_stage.hide();
                 app_stage.setScene(home_page_scene);
                 app_stage.show();
+                
             }
               
                 if(pointerPosition==0 && e.getCode()== KeyCode.ENTER){
-               Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                mediaPlayer1.play();
+                Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                 app_stage.hide();
                 try {
                     app_stage.setScene(new GamePanel(new Group(), app_stage));
                 } catch (IOException ex) {
                     Logger.getLogger(MainMenuController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-        app_stage.show();
+                app_stage.show();                
                 }
         
             if (e.getCode()== KeyCode.DOWN){         

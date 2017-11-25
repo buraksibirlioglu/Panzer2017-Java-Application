@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -7,11 +8,22 @@ package panzer.brainClass;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -21,7 +33,9 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import panzer.entities.Bonus;
+import javafx.stage.Stage;
+import javax.swing.JOptionPane;
+//import panzer.entities.Bonus;
 import panzer.entities.Brick;
 import panzer.entities.Bullet;
 import panzer.entities.Castle;
@@ -42,48 +56,51 @@ import panzer.pkg2017.Panzer2017;
  */
 public class GameEngine {
     PlayerTank playerTank;
+    EnemyTank enemyTank;
     ArrayList<EnemyTank> enemyTankList;
     public MyAnimationTimer timer;
-    ArrayList<Bonus> bonusList;
+    //ArrayList<Bonus> bonusList;
     ArrayList<GameObject> allObjectsList ;
     ArrayList<Castle> castleList;
     Map map;
     Image imageEnemy;
     ArrayList<Bullet> bulletList;
-            
-    int point;
-    int time;
-  boolean drawBottomBar = true;
+    int points;
+    boolean drawBottomBar = true;
+    boolean isStop=false;
+    int level;
   
             
    // Constructor   
     public GameEngine() throws IOException{
         allObjectsList = new ArrayList<>();
         timer = new MyAnimationTimer();
-        map = new Map(100,600);
+        level=1;
+        
         
     }
     
-      public ArrayList<Bullet> getBulletList() {
+    public ArrayList<Bullet> getBulletList() {
         return bulletList;
     }
+    
     // populate with objects
     public void initializeLevel1(){
+        try {
+            map = new Map(100,600,level);
+        } catch (IOException ex) {
+            Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
+        }
         enemyTankList= createEnemyTankArrayList();
-        bonusList = createBonusList();
-        playerTank = createPlayerTank();  
+        //bonusList = createBonusList();
+        playerTank = new PlayerTank(true, 200, 200,38, 38,5);
         allObjectsList.add(playerTank);
         bulletList = new ArrayList<>();
-//        for (int i = 0; i < bonusList.size(); i++){
-//            allObjectsList.add(bonusList.get(i));
-//        }
+        
         for (int i = 0; i < map.getBricks().size(); i++){
             allObjectsList.add(map.getBricks().get(i));
-        }
-//        for (int i = 0; i < getBulletList().size(); i++){
-//            allObjectsList.add(getBulletList().get(i));
-//        }
-         setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy1.png").toExternalForm(),250,40,false,false));
+        }        
+        setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy1.png").toExternalForm(),250,40,false,false));
         castleList = createCastles();
         allObjectsList.add(castleList.get(0));
         allObjectsList.add(castleList.get(1));
@@ -92,38 +109,30 @@ public class GameEngine {
         }
     }
     
-    // type = 1 = playerCastle ,
+    // creates both enemy-friendly castles
     public ArrayList<Castle> createCastles(){
-        ArrayList<Castle> castle;
-        ArrayList<Image> castleImage = new ArrayList<>();
-        castle=new ArrayList<>();
-        castleImage.add(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),40,60,false,false));
-        castleImage.add(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),40,60,false,false));
-        PlayerCastle C = new PlayerCastle(true, 0, 250,60, 60, 0,castleImage,60); // player castle
-        castle.add(C);
-        EnemyCastle  enemy =new EnemyCastle(true, 959, 250,60, 60, 0,castleImage,60); // enemy 
-        castle.add(enemy);
+        ArrayList<Castle> castle=new ArrayList<>();
+        castle.add(new PlayerCastle(true, 0, 250,60, 60,60));
+        castle.add(new EnemyCastle(true, 959, 250,60, 60,60));
         return castle;
     }
     
+    // returns all of the objects currently on the game
     public ArrayList<GameObject> getAllObjectsList() {
         return allObjectsList;
     }
     
-    public void addAGameObject(GameObject object){
-        allObjectsList.add(object);
-    }
-    
-    private ArrayList<Bonus> createBonusList(){
+    // createas a list of bonuses
+  /*  private ArrayList<Bonus> createBonusList(){
         ArrayList<Bonus> temp = new ArrayList<>();
         temp.add(createBonus(100, 100,1 ));
         temp.add(createBonus(200, 100,2 ));
         temp.add(createBonus(250, 300,3 ));
         temp.add(createBonus(400, 200,4 ));
         return temp;
-    }
+    }*/
     
-    private Bonus createBonus(double x, double y, int type){
+   /* private Bonus createBonus(double x, double y, int type){
         String fileName ="images/"; 
         if ( type == 1){
             fileName += "power_speed.png";
@@ -136,39 +145,27 @@ public class GameEngine {
         }
         ArrayList<Image> icon = new ArrayList<>();
         icon.add(new Image(Panzer2017.class.getResource(fileName).toExternalForm()));
-        return new Bonus(true,x,y,60,60,6000,icon);
-    }
+        return new Bonus(true,x,y,60,60);
+    }*/
     
-    public ArrayList<Bonus> getBonusList() {
+   /* public ArrayList<Bonus> getBonusList() {
         return bonusList;
-    }
-        
-    private PlayerTank createPlayerTank(){
-        ArrayList<Image> icon = new ArrayList<>();
-        icon.add(new Image(Panzer2017.class.getResource("images/user_tank_up.png").toExternalForm(),38,38,false,false));
-        icon.add(new Image(Panzer2017.class.getResource("images/user_tank_down.png").toExternalForm(),38,38,false,false));
-        icon.add(new Image(Panzer2017.class.getResource("images/user_tank_left.png").toExternalForm(),38,38,false,false));
-        icon.add(new Image(Panzer2017.class.getResource("images/user_tank_right.png").toExternalForm(),38,38,false,false));
-        PlayerTank temp = new PlayerTank(true, 200, 200,38, 38,1, icon,5);
-        return temp;
-    }
+    }*/
     
+    // assigning initial location of enemy tanks
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
-        enemies.add(createSingleEnemyTank(200));
-        enemies.add(createSingleEnemyTank(400));
-        enemies.add(createSingleEnemyTank(300));
+        enemies.add(createSingleEnemyTank(820,250));
+        enemies.add(createSingleEnemyTank(800,350));
+        enemies.add(createSingleEnemyTank(850,400));
+        enemies.add(createSingleEnemyTank(800,150));
+        enemies.add(createSingleEnemyTank(810,50));
+        enemies.add(createSingleEnemyTank(850,450));
         return enemies;
     }
     
-    private EnemyTank createSingleEnemyTank(float x){
-        ArrayList<Image> icon = new ArrayList<>();
-        icon.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm()));
-        icon.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm()));
-        icon.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm()));
-        icon.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm()));
-        EnemyTank temp = new EnemyTank(true, x, 0,60, 50,1000000, icon,1);
-        temp.getObjectView().setFocusTraversable(true);             
+    private EnemyTank createSingleEnemyTank(float x, float y){
+        EnemyTank temp = new EnemyTank(true, x, y,38, 38,21);      
         return temp;
     }
         
@@ -180,244 +177,631 @@ public class GameEngine {
         return enemyTankList.get(n);
     }
     
+    // sets the image to the health bar of the enemy king
+    public void setImageEnemy(Image img){
+        imageEnemy = img;
+    }
+    
+    // Custom event handler for keyboard on press
     public  class HandleKeyPressed implements EventHandler<KeyEvent>{  
          
         @Override
         public void handle(KeyEvent e){   
           
-            switch (e.getCode()) {
-               case W :                  
-                  getPlayerTank().moveUp(false);
-                  break;
-               case S:
-                  getPlayerTank().moveDown(false);
-                  break;
-               case D:
-                  getPlayerTank().moveRight(false);
-                  break;
-               case A:
-                  getPlayerTank().moveLeft(false);
-                  break;
+            switch (e.getCode()) {               
+                case UP :  
+                    if (getPlayerTank().isAlive())
+                        getPlayerTank().moveUp(false);
+                    break;
+               case DOWN:
+                    if (getPlayerTank().isAlive())
+                        getPlayerTank().moveDown(false);
+                    break;
+               case RIGHT:
+                    if (getPlayerTank().isAlive())
+                        getPlayerTank().moveRight(false);
+                    break;
+               case LEFT:
+                    if (getPlayerTank().isAlive())
+                        getPlayerTank().moveLeft(false);
+                    break;
                case SPACE:{
-                    getPlayerTank().feuer(GameEngine.this);
-                   
-               }
+                    if (getPlayerTank().isAlive())
+                    getPlayerTank().feuer(GameEngine.this);    
+                }
                    break;
                   
             }   
         }
     }
     
+    // Custom event handler for keyboard on release 
     public  class HandleKeyReleased implements EventHandler<KeyEvent>{  
 
         @Override
         public void handle(KeyEvent e){   
             switch (e.getCode()) {
-               case W:
+               case UP:
                   getPlayerTank().moveUp(true);
                   break;
-               case S:
+               case DOWN:
                   getPlayerTank().moveDown(true);
                   break;
-               case D:
+               case RIGHT:
                   getPlayerTank().moveRight(true);
                   break;
-               case A:
+               case LEFT:
                    getPlayerTank().moveLeft(true);
                   break;
+               case P:
+                   if(isStop==false){
+                    timer.stop();
+                    isStop=true;
+                   }
+                   else{
+                    timer.start();
+                    isStop=false;
+                   }
+                   break;
             }
         }
     }
-   
-    public void setImageEnemy(Image img){
-        imageEnemy = img;
-    }
+     
+    // The timer which runs the code on a certain framerate to offer smooth gameplay 
     public class MyAnimationTimer extends AnimationTimer{
         Canvas thisCanvas;
-    
         final int updateTime = 8; // in ms
         boolean right = false;
         int bonusCount = 100;
         GraphicsContext gc ;
-        long oldNanoTime = System.nanoTime();
-        
-        
+        int time;
+        long oldNanoTime = System.nanoTime();  
+        long oldNanoTime1 = System.nanoTime(); 
+        long previosTime = 0;
+        long previosTime1 = 0;
         @Override
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
             gc.clearRect(0, 0, 1000, 600);
-             handleCollision();
-            drawAllObjectsOnScren(gc,point,time,drawBottomBar);
-           
+         
+            gc.clearRect(390, 0, 104, 650); 
+            drawAllObjectsOnScren(gc,points,time,drawBottomBar);          
+            
+             previosTime1 += System.nanoTime() - oldNanoTime;
+            oldNanoTime1 = System.nanoTime(); // update old nano time
+            if(previosTime1 / 1000000.0 > 8){
+                previosTime1 = 0;
+             //   System.out.println("time");
+                handleCollision(gc); 
+                  drawAllObjectsOnScren(gc,points,time,drawBottomBar);                         
+            }
+            
+          //enemyTank.update(1);
             drawBottomBar = false;
-//            System.out.println("X=" + playerTank.getCoordinateX() );
-//            System.out.println("Y=" + playerTank.getCoordinateY() );
-               if(playerTank.getCoordinateY() <= 555 && playerTank.getCoordinateX() >= 0  && playerTank.getCoordinateY() >=0  && playerTank.getCoordinateX() <=958){
-                    playerTank.update(1);// 1 = allows movement down
-               }
-               else if (playerTank.getCoordinateY()>=556 ) // 2 = limit movement beyond lower boundary y < 556
-                   playerTank.update(2);
-               
-               else if (playerTank.getCoordinateX() < 0 )
-                   playerTank.update(3);// 3 = limit movement beyond left boundary x > 0
-                   
-               else if (playerTank.getCoordinateY() < 0){
-                    playerTank.update(4);// 4 = limit movement above upper boundary Y > 0
-               }else if (playerTank.getCoordinateX() >958){
-                    playerTank.update(5);// 4 = limit movement beyond right boundary x <945
-               }
-                if( playerTank.getMyBullet() != null){
-                    decerementBulletRange();
-                    if (playerTank.getDirection() == 0){
-                        if( playerTank.getMyBullet() != null){
-                            playerTank.getMyBullet().setCoordinateY(playerTank.getMyBullet().getCoordinateY()+playerTank.getMyBullet().getSpeedY());
-                        }
-                    }else if (playerTank.getDirection() == 1){
-                        if( playerTank.getMyBullet() != null){
-                         //   System.out.println("not deleted yet");
-                            playerTank.getMyBullet().setCoordinateY(playerTank.getMyBullet().getCoordinateY()+playerTank.getMyBullet().getSpeedY());
-                        }
-                    }else if (playerTank.getDirection() == 2){
-                        if( playerTank.getMyBullet() != null){
-                          //  System.out.println("not deleted yet");
-                            playerTank.getMyBullet().setCoordinateX(playerTank.getMyBullet().getCoordinateX()+playerTank.getMyBullet().getSpeedX());
-                        }
-                    }else if (playerTank.getDirection() == 3){
-                        if( playerTank.getMyBullet() != null){
-                           // System.out.println("not deleted yet");
-                            playerTank.getMyBullet().setCoordinateX(playerTank.getMyBullet().getCoordinateX()+playerTank.getMyBullet().getSpeedX());
-                        }
-                    }
+            keepPlayerTankWithinBounds();
+              for (int i = 0; i < enemyTankList.size();i++)
+                  keepEnemyTankWithinBounds(enemyTankList.get(i));
+            
+            
+            previosTime += System.nanoTime() - oldNanoTime;
+            oldNanoTime = System.nanoTime(); // update old nano time
+            if(previosTime / 1000000.0 > 2000){           
+                System.out.println("time");
+                for (int i = 0; i < enemyTankList.size();i++) {  
+                    if(!playerOnSight(enemyTankList.get(i)))
+                        changeRoute(enemyTankList.get(i));//  
                 }
+                previosTime = 0;
+              
+                //random enemy bullet shot 
+                int random = getRandom();
+                if(random >=0 && random <= 500)
+                   enemyTankList.get(0).feuer(GameEngine.this);
+                if(random >500 && random <= 1000)
+                   enemyTankList.get(1).feuer(GameEngine.this);
+                if(random >1000 && random <= 1500)
+                   enemyTankList.get(2).feuer(GameEngine.this);
+            }
+                        
+            setBulletMotion(getPlayerTank());
+            
+            for (int i = 0; i < enemyTankList.size();i++){
+                setBulletMotion(enemyTankList.get(i));               
+                shootIfOnSight( enemyTankList.get(i));
+            }
         }
-        
-        public void updateIt(){
-               for(int i = 0; i < getAllObjectsList().size(); i ++){
-                 GameObject o =  getAllObjectsList().get(i);
-                if (o instanceof Tank){
-                  // playerTank.update(true);
+                
+        public void setBulletMotion(Tank enemyOrFriendly){
+             if( enemyOrFriendly.getMyBullet() != null){
+                decerementBulletRange();
+                 if (enemyOrFriendly.getDirection() == 0){
+                    if( enemyOrFriendly.getMyBullet() != null){
+                         enemyOrFriendly.getMyBullet().setCoordinateY(enemyOrFriendly.getMyBullet().getCoordinateY()+enemyOrFriendly.getMyBullet().getSpeedY());
+                    }
+                 }else if (enemyOrFriendly.getDirection() == 1){
+                    if( enemyOrFriendly.getMyBullet() != null){
+                        enemyOrFriendly.getMyBullet().setCoordinateY(enemyOrFriendly.getMyBullet().getCoordinateY()+enemyOrFriendly.getMyBullet().getSpeedY());
+                    }
+                 }else if (enemyOrFriendly.getDirection() == 2){
+                    if( enemyOrFriendly.getMyBullet() != null){
+                        enemyOrFriendly.getMyBullet().setCoordinateX(enemyOrFriendly.getMyBullet().getCoordinateX()+enemyOrFriendly.getMyBullet().getSpeedX());
+                    }
+                 }else if (enemyOrFriendly.getDirection() == 3){
+                    if( enemyOrFriendly.getMyBullet() != null){
+                         enemyOrFriendly.getMyBullet().setCoordinateX(enemyOrFriendly.getMyBullet().getCoordinateX()+enemyOrFriendly.getMyBullet().getSpeedX());
+                    }
                 }
             }
         }
-        
-      
+       
         public void drawAllObjectsOnScren(GraphicsContext g,int point,int time, boolean drawKings){
-           g.clearRect(345, 605, 345, 100); 
            for(int i = 0; i < getAllObjectsList().size() ; i++){
                 GameObject o = getAllObjectsList().get(i);
 			if(o.isAlive()){
+                            //System.out.println("hi this is me");
                             g.drawImage(o.getImg(), (int)(o.getCoordinateX()) , (int)(o.getCoordinateY()));                       
                         }
 		}
-           
+       
             g.setFill(Color.WHITE);
-            g.setFont(Font.font("Verdana", FontWeight.BOLD, 25));
-            System.out.println(point);
+            g.setFont(Font.font("Verdana", FontWeight.LIGHT, 25));
+            g.fillText("Points :   " , 345, 635);
             g.fillText("Points : "+point , 345, 635);
-            g.drawImage(new Image(Panzer2017.class.getResource("images/power_freeze.png").toExternalForm(),40,40,false,false), 500, 605);
-            g.fillText(time+" s " , 555, 635);
-            
-           if(drawKings){
-            g.setStroke(Color.RED);
+             g.setStroke(Color.RED);
             g.setLineWidth(1);
             g.strokeLine(0, 601, 1000, 601);
+           if(drawKings){
             g.drawImage(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),30,40,false,false), 15, 605);
             g.drawImage(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),30,40,false,false), 955, 605);
            
                System.out.println("do it agaaaaain");
             g.drawImage(new Image(Panzer2017.class.getResource("images/health_bar_king1.png").toExternalForm(),250,40,false,false), 60, 605);
             g.drawImage(imageEnemy, 690, 605);
-            
+           
+           
+            g.drawImage(new Image(Panzer2017.class.getResource("images/power_freeze.png").toExternalForm(),40,40,false,false), 500, 605);
+            g.fillText(time+" s " , 555, 635);
            }
         }
         
         public void setGraphics(GraphicsContext c){
             gc = c;
-        }
-                
+        }                
     }
     
-    public void handleCollision(){
+    // method which stops player tank  to go beyond map bounds
+    public void keepPlayerTankWithinBounds(){
+         if(playerTank.getCoordinateY() <= 555 && playerTank.getCoordinateX() >= 0  && playerTank.getCoordinateY() >=0  && playerTank.getCoordinateX() <=958){
+                 playerTank.update(1);// 1 = allows movement down
+            }
+            else if (playerTank.getCoordinateY()>=556 ) // 2 = limit movement beyond lower boundary y < 556
+                playerTank.update(2);
+
+            else if (playerTank.getCoordinateX() < 0 )
+                playerTank.update(3);// 3 = limit movement beyond left boundary x > 0
+
+            else if (playerTank.getCoordinateY() < 0){
+                playerTank.update(4);// 4 = limit movement above upper boundary Y > 0
+            }else if (playerTank.getCoordinateX() >958){
+                playerTank.update(5);// 4 = limit movement beyond right boundary x <945
+            }
+    }
+    
+    //method which stops enemy tanks to go beyond map bounds
+    public void keepEnemyTankWithinBounds(EnemyTank enemyTank){
+        if(enemyTank.getCoordinateY() <= 555 && enemyTank.getCoordinateX() >= 0  && enemyTank.getCoordinateY() >=0  && enemyTank.getCoordinateX() <=958){
+                 enemyTank.update(1);// 1 = allows movement down
+            }
+            else if (enemyTank.getCoordinateY()>=556 ){ // 2 = limit movement beyond lower boundary y < 556
+                enemyTank.update(2);
+                 enemyTank.moveUp(false);
+    }
+            else if (enemyTank.getCoordinateX() < 0 ){
+                enemyTank.update(3);// 3 = limit movement beyond left boundary x > 0
+                 enemyTank.moveRight(false);
+    }
+            else if (enemyTank.getCoordinateY() < 0){
+               //  changeRoute();
+                enemyTank.update(4);// 4 = limit movement above upper boundary Y > 0
+                enemyTank.moveDown(false);
+            }else if (enemyTank.getCoordinateX() >958){
+                enemyTank.update(5);// 4 = limit movement beyond right boundary x <945
+                enemyTank.moveLeft(false);
+            }
+    }
+       
+    // generate a random number
+    public int getRandom(){
+        Random rand = new Random();
+        return rand.nextInt(1500) + 1;
+    }
+    
+    // changes enemy tank's route when evoked - randomly decide a 
+    public void changeRoute(EnemyTank enemyTank){
+        Random rand = new Random();
+        int  n = rand.nextInt(1500) + 1;
+      //  System.out.println("random = "+n);
+        if(n >= 0 && n <= 200){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveLeft(false);
+                return;
+            }
+             
+        }
+        else if(n > 200  && n <= 400){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);              
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveDown(false);
+                return;
+            } 
+        }
+        else if(n > 400 && n <= 600){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveUp(false);
+                enemyTank.feuer(GameEngine.this);
+                return;
+            } 
+        }
+        else if(n > 600 && n <= 800){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveUp(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveRight(false);
+                return;
+            }   
+        }
+        else if (n > 800 && n <= 900){
+            if(enemyTank.getDirection()==0){//up
+                enemyTank.moveLeft(false);
+                return;
+            }else if (enemyTank.getDirection()==1){//down          
+                enemyTank.moveRight(false);
+                return;
+            }else if (enemyTank.getDirection()==2){//left          
+                enemyTank.moveDown(false);
+                return;
+            }else if (enemyTank.getDirection()==3){//right          
+                enemyTank.moveDown(false);
+                return;
+            }   
+        }
+        
+    }
+    
+    //decided what happens when object collide
+    public void handleCollision(GraphicsContext c){
         for(int i = 0 ; i < allObjectsList.size() ; i++){
             for(int j = 0 ; j < allObjectsList.size() ; j++){
                 if(i == j) continue;
                 if(i >= allObjectsList.size()) break;
-                    GameObject obj1 = allObjectsList.get(i);
-                    GameObject obj2 = allObjectsList.get(j);
-                    if(allObjectsList.get(i).collisionCheck(allObjectsList.get(j))){
-                       if(obj1 instanceof Tank && obj2 instanceof Brick){
-                            //if(obj2 instanceof GrassTile) continue;
-                            obj1.setSpeedX(0.0f);
-                            obj1.setSpeedY(0.0f);
-                        }     
-                        if(obj1 instanceof Bullet && obj2 instanceof Brick){
-						//if(obj2 instanceof GrassTile) continue;
-						obj2.setAlive(false);
-                                                obj1.setAlive(false);
-                                                 Bullet b = (Bullet)obj1;
-                                                 b.setSpeedX(0);
-                                                 b.setSpeedY(0);
-                                                System.out.println("shotttt");
-                                                allObjectsList.remove(j);
-                                                point++;
-//                                                allObjectsList.remove(i);
-                                                MediaPlayer mediaPlayer;
-                                                Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
-                                                mediaPlayer = new MediaPlayer(sound);  
-                                                mediaPlayer.play();
+                GameObject obj1 = allObjectsList.get(i);
+                GameObject obj2 = allObjectsList.get(j);
+                if(allObjectsList.get(i).collisionCheck(allObjectsList.get(j))){
+                   if(obj1 instanceof PlayerTank && obj2 instanceof Brick){
+                        obj1.setSpeedX(0.0f);
+                        obj1.setSpeedY(0.0f);
+                    }  
+                   if(obj1 instanceof EnemyTank && obj2 instanceof Brick){ 
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() <=-38){
+                           obj1.setCoordinateX(obj1.getCoordinateX()-1);
                         }
-                         if(obj1 instanceof Bullet && obj2 instanceof Castle){
-                            //if(obj2 instanceof GrassTile) continue;
-                            if (obj1.isAlive()){
-                                EnemyCastle temp = (EnemyCastle)obj2;
-                                System.out.println("life=" + temp.getLife());
-                                temp.setLife(temp.getLife()-10);
-                                obj1.setAlive(false);
-                                Bullet b = (Bullet)obj1;
-                                b.setSpeedX(0);
-                                b.setSpeedY(0);
-                                System.out.println("done---------");
-                                drawBottomBar = true;
-                                if (temp.getLife() == 50)
-                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy2.png").toExternalForm(),250,40,false,false));
-                                else if (temp.getLife() == 40)
-                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy3.png").toExternalForm(),250,40,false,false));
-                                else if (temp.getLife() == 30)
-                                     setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy4.png").toExternalForm(),250,40,false,false));
-                                else if (temp.getLife() == 20)
-                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy5.png").toExternalForm(),250,40,false,false));
-                                else if (temp.getLife() == 10)
-                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy6.png").toExternalForm(),250,40,false,false));
-                                else if (temp.getLife() == 0){
-                                    setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy_empty.png").toExternalForm(),250,40,false,false));
-                                    temp.setAlive(false);
-                                    allObjectsList.remove(j);
-                                }
-                            
-                            }
-                            }  
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >=40){
+                           obj1.setCoordinateX(obj1.getCoordinateX()+1);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() <=-38){
+                           obj1.setCoordinateY(obj1.getCoordinateY()-1);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=40){
+                           obj1.setCoordinateY(obj1.getCoordinateY()+1);
+                        }
+                        changeRoute((EnemyTank)obj1);
                     }
+                    if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){   
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >= 38){
+                            obj1.setCoordinateX(obj1.getCoordinateX()+5);
+                            obj2.setCoordinateX(obj2.getCoordinateX()-5);
+                        }                        
+                         if( obj1.getCoordinateX()-obj2.getCoordinateX() <=-38){
+                            obj1.setCoordinateX(obj1.getCoordinateX()-1);
+                            obj2.setCoordinateX(obj2.getCoordinateX()+1);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() <=-38){
+                           obj1.setCoordinateY(obj1.getCoordinateY()-1);
+                            obj2.setCoordinateY(obj2.getCoordinateY()+1);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=38){
+                            obj1.setCoordinateY(obj1.getCoordinateY()+1);
+                            obj2.setCoordinateY(obj2.getCoordinateY()-1);
+                        }
+                         MediaPlayer mediaPlayer;
+                        Media sound = new Media(MainMenuController.class.getResource("sound/buzz_effect.mp3").toExternalForm());
+                        mediaPlayer = new MediaPlayer(sound);  
+                        mediaPlayer.play();
+                        changeRoute((EnemyTank)obj1);
+                        System.out.println("enemy touched");
+                    }
+                    if(obj1 instanceof EnemyTank && obj2 instanceof EnemyTank){   
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >= 38){
+                           obj1.setCoordinateX(obj1.getCoordinateX()+5);
+                            obj2.setCoordinateX(obj2.getCoordinateX()-5);
+                        }                        
+                         if( obj1.getCoordinateX()-obj2.getCoordinateX() <=-38){
+                            obj1.setCoordinateX(obj1.getCoordinateX()-5);
+                            obj2.setCoordinateX(obj2.getCoordinateX()+5);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() <=-38){
+                           obj1.setCoordinateY(obj1.getCoordinateY()-5);
+                            obj2.setCoordinateY(obj2.getCoordinateY()+5);
+                        }
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=38){
+                            obj1.setCoordinateY(obj1.getCoordinateY()+5);
+                            obj2.setCoordinateY(obj2.getCoordinateY()-5);
+                        }
+                        changeRoute((EnemyTank)obj1);
+                        changeRoute((EnemyTank)obj2);
+                        System.out.println("enemy touched");
+                    }
+                    if(obj1 instanceof Bullet && obj2 instanceof Brick){
+                        //if(obj2 instanceof GrassTile) continue;
+                        
+                        obj2.setAlive(false);
+                        obj1.setAlive(false);
+                         Bullet b = (Bullet)obj1;
+                         b.setSpeedX(0);
+                         b.setSpeedY(0);
+                        System.out.println("shotttt");
+                        allObjectsList.remove(j);
+                        MediaPlayer mediaPlayer;
+                        Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
+                        mediaPlayer = new MediaPlayer(sound);  
+                        mediaPlayer.play();
+                        if(b.getBulletOwner()== b.getBulletOwner())
+                            points++;
+                    }
+                    if(obj1 instanceof Bullet && obj2 instanceof EnemyTank){                   
+                         Bullet b = (Bullet)obj1;
+                        if(b.getBulletOwner()==getPlayerTank()){
+                            obj2.setAlive(false);
+                            obj1.setAlive(false);
+                            b.setSpeedX(0);
+                            b.setSpeedY(0);
+                            System.out.println("shotttt Enemy");                       
+                            EnemyTank t = (EnemyTank)obj2;
+                            t.setSpeedX(0);
+                            t.setSpeedY(0);
+                            allObjectsList.get(j).setAlive(false);
+                            allObjectsList.remove(j);
+                            MediaPlayer mediaPlayer;
+                            Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
+                            mediaPlayer = new MediaPlayer(sound);  
+                            mediaPlayer.play();
+                            points+=50;
+                        }
+                    }
+                     if(obj1 instanceof Bullet && obj2 instanceof PlayerTank){                   
+                        Bullet b = (Bullet)obj1;
+                        if (b.getBulletOwner()!=getPlayerTank()){
+                            obj1.setAlive(false);
+                            b.setSpeedX(0);
+                            b.setSpeedY(0);
+                            allObjectsList.remove(i);
+                            System.out.println("shotttt Enemy");                       
+                            PlayerTank t = (PlayerTank)obj2;
+                            t.setLife(t.getLife()-1);
+                             System.err.println("Shot by enemy");
+                            MediaPlayer mediaPlayer;
+                            Media sound = new Media(MainMenuController.class.getResource("sound/player_shot.mp3").toExternalForm());
+                            mediaPlayer = new MediaPlayer(sound);  
+                            if(t.getLife()==4){
+                                t.setIcon(t.get4LifeIconImages());
+                                mediaPlayer.play();
+                            } 
+                            if(t.getLife()==3){
+                                t.setIcon(t.get3LifeIconImages());
+                                mediaPlayer.play();
+                            }                          
+                            if(t.getLife()==2){
+                                t.setIcon(t.get2LifeIconImages());
+                                mediaPlayer.play();
+                            }if(t.getLife()==1){
+                                t.setIcon(t.get1LifeIconImages());
+                                mediaPlayer.play();
+                            } 
+                            if(t.getLife()==0){
+                                allObjectsList.remove(j);
+                                t.setAlive(false);
+                                System.err.println("Shot by enemy and DIED!!");
+                                Media sound2 = new Media(MainMenuController.class.getResource("sound/game_lost.mp3").toExternalForm());
+                                mediaPlayer = new MediaPlayer(sound2);  
+                                mediaPlayer.play();
+                                showDialog( "PANZER 2017", "TRY AGAIN!!", "YOUR TANK GOT KILLED!" );      
+                            } 
+                        }
+                    }
+                     if(obj1 instanceof Bullet && obj2 instanceof EnemyCastle){
+                        if (obj1.isAlive()){
+                            EnemyCastle temp = (EnemyCastle)obj2;
+                            System.out.println("life=" + temp.getLife());
+                            temp.setLife(temp.getLife()-10);
+                            obj1.setAlive(false);
+                            Bullet b = (Bullet)obj1;
+                            b.setSpeedX(0);
+                            b.setSpeedY(0);
+                            System.out.println("done---------");
+                            drawBottomBar = true;
+                            points += 40;
+                            if (temp.getLife() == 50)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy2.png").toExternalForm(),250,40,false,false));
+                            else if (temp.getLife() == 40)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy3.png").toExternalForm(),250,40,false,false));
+                            else if (temp.getLife() == 30)
+                                 setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy4.png").toExternalForm(),250,40,false,false));
+                            else if (temp.getLife() == 20)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy5.png").toExternalForm(),250,40,false,false));
+                            else if (temp.getLife() == 10)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy6.png").toExternalForm(),250,40,false,false));
+                            else if (temp.getLife() == 0){
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy_empty.png").toExternalForm(),250,40,false,false));
+                                temp.setAlive(false);
+                                allObjectsList.remove(j);
+                                c.clearRect(0, 0, 1000, 600);
+                                timer.stop();
+                                showDialog( "PANZER 2017", "Congratulations!!", "YOU WON THE GAME!" );                                    
+                            }                            
+                        }
+                    }if(obj1 instanceof Bullet && obj2 instanceof PlayerCastle){
+                        if (obj1.isAlive()){
+                            Bullet temp = (Bullet) obj1;
+                            if(temp.getBulletOwner()== getPlayerTank()){
+                                showDialog("Warning", "Ignorant shot", "DON'T SHOOT YOUR OWN KING!!!");
+                            }
+                            else{
+                                PlayerCastle temp2 = (PlayerCastle)obj2;
+                                 if (temp2.getLife() == 50)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_2.png").toExternalForm(),250,40,false,false));
+                            else if (temp2.getLife() == 40)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_3.png").toExternalForm(),250,40,false,false));
+                            else if (temp2.getLife() == 30)
+                                 setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_4.png").toExternalForm(),250,40,false,false));
+                            else if (temp2.getLife() == 20)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_5.png").toExternalForm(),250,40,false,false));
+                            else if (temp2.getLife() == 10)
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_6.png").toExternalForm(),250,40,false,false));
+                            else if (temp2.getLife() == 0){
+                                setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_empty.png").toExternalForm(),250,40,false,false));
+                                temp.setAlive(false);
+                                allObjectsList.remove(j);
+                                c.clearRect(0, 0, 1000, 600);
+                                timer.stop();
+                                showDialog( "PANZER 2017", "MESSAGE!!", "YOU LOST THE GAME!" );                                    
+                            }  
+                            }
+                        }
+                        
+                    }  
+                }
             }
         }
     }
     
-    public void decerementBulletRange() {
-		for(int i = 0 ; i < bulletList.size() ; i++){
-			bulletList.get(i).decrementBulletRange();
-                     //   bulletList.get(i).setSpeedX(bulletList.get(i).getSpeedX());
-                       //  System.out.println("deleted range="+bulletList.get(i).getRange()  );
-			if(bulletList.get(i).getRange() <= 0){
-				allObjectsList.remove(bulletList.get(i));
-				bulletList.get(i).getBulletOwner().setBullet(null);
-				bulletList.remove(bulletList.get(i));
-			}
-		}
-	}
- 
+    //If playerTank is near, the shooterTank will then detect the presence and start shooting : method returns true
+    public boolean playerOnSight(EnemyTank shooterTank){
+        double ePosX = shooterTank.getCoordinateX();
+        double ePosY = shooterTank.getCoordinateY();
+        double pPosX = getPlayerTank().getCoordinateX();
+        double pPosY = getPlayerTank().getCoordinateY();
+        if(getPlayerTank().isAlive() && shooterTank.isAlive()){
+              if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=24 ){    
+                return true;
+            }
+           if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 24){  
+                return true;
+            }
+
+             if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=24){
+                return true;
+            }
+            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=24){
+                return true;
+            }
+         }
+        return false;  
         
     }
-         
-              
-        
     
+    // if player tank is near , move towards him and shoot
+     public void shootIfOnSight(EnemyTank shooterTank){
+        double ePosX = shooterTank.getCoordinateX();
+        double ePosY = shooterTank.getCoordinateY();
+        double pPosX = getPlayerTank().getCoordinateX();
+        double pPosY = getPlayerTank().getCoordinateY();
+        if(getPlayerTank().isAlive() && shooterTank.isAlive()){
+            if( (ePosX-pPosX) <=100 && (ePosX-pPosX) > 0 && Math.abs(ePosY-pPosY) <=20 ){              
+                shooterTank.feuer(this);
+                if((ePosX-pPosX) > 0 && (ePosX-pPosX) < 45  )
+                      shooterTank.moveInDirection(2,true); // set him to stop
+                else
+                      shooterTank.moveInDirection(2,false); // set him to move left toward player  
+            }
+            if( (ePosX-pPosX) >=-100 && (ePosX-pPosX) < 0  && Math.abs(ePosY-pPosY) <= 20){              
+                shooterTank.feuer(this);
+                if((ePosX-pPosX) < 0  && (ePosX-pPosX) > -45)
+                    shooterTank.moveInDirection(3,true); // set him to stop
+                else
+                    shooterTank.moveInDirection(3,false); // set him to move right toward player  
+            }
 
+            if( (ePosY-pPosY) >=-100 && (ePosY-pPosY) < 0 && Math.abs(ePosX-pPosX)<=20){
+                shooterTank.feuer(this);
+                if((ePosY-pPosY) < 0 && (ePosY-pPosY) > -45  )  
+                    shooterTank.moveInDirection(1,true); // set him to stop
+                else
+                    shooterTank.moveInDirection(1,false); // set him to move DOWN toward player                       
+            }
+            if( (ePosY-pPosY) <=100 && (ePosY-pPosY) > 0 && Math.abs(ePosX-pPosX)<=20){
+                shooterTank.feuer(this);
+                if((ePosY-pPosY) >0 && (ePosY-pPosY) < 45 ){
+                   shooterTank.moveInDirection(0,true); // set him to stop                   
+                }
+                else
+                    shooterTank.moveInDirection(0,false); // set him to move DOWN toward player  
+            }
+        }             
+    }
+     
+     // assist the bullet animation logic. 
+    public void decerementBulletRange() {
+        for(int i = 0 ; i < bulletList.size() ; i++){
+            bulletList.get(i).decrementBulletRange();
+            if(bulletList.get(i).getRange() <= 0){
+                allObjectsList.remove(bulletList.get(i));
+                bulletList.get(i).getBulletOwner().setBullet(null);
+                bulletList.remove(bulletList.get(i));
+            }
+        }
+    }
+        
+    private void showDialog( String title, String header, String content ){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+       // ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(icon);
+         alert.setOnHidden(evt -> Platform.exit());
+        alert.show();
+    }  
+
+}

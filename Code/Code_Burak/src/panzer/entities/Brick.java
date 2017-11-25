@@ -5,8 +5,14 @@
  */
 package panzer.entities;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.image.Image;
+import javax.imageio.ImageIO;
+import panzer.pkg2017.Panzer2017;
 
 /**
  *
@@ -15,9 +21,9 @@ import javafx.scene.image.Image;
 public class Brick extends GameObject{
     private int life;
     private int type;
-    public Brick(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, int _speed, ArrayList<Image> _icon) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);
-        //this.life=life;
+    public Brick(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height);
+        setCustomImg(new Image(Panzer2017.class.getResource("images/brown_brick.png").toExternalForm(),40,40,false,false));
     }
     public int getLife()
     {
