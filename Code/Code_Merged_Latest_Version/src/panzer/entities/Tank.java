@@ -21,7 +21,10 @@ public class Tank extends GameObject{
     private int life;
     //Bullet this bullet 
      Bullet myBullet;
+    int tank_speed;
 
+    
+   
      
     private int direction; // 0 up , 1 down , 2 left, 3 right 
     private boolean moving;
@@ -30,9 +33,17 @@ public class Tank extends GameObject{
     public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life) {
         super(_isAlive, _coordinateX, _coordinateY, width, height);  
         this.life = life;
+        tank_speed = 1;
     }      
     
- 
+    public void setTank_speed(int tank_speed) {
+        this.tank_speed = tank_speed;
+    }
+    
+    public int getTank_speed() {
+        return tank_speed;
+    }
+
    
     public Bullet getMyBullet() {
         return myBullet;
@@ -79,7 +90,7 @@ public class Tank extends GameObject{
             //direction = 0;
         }else{
             direction = 0;
-            setSpeedY(-1);
+            setSpeedY(-1*tank_speed);
             setSpeedX(0);
            setImg(0);// up img
         }    
@@ -91,7 +102,7 @@ public class Tank extends GameObject{
            // direction = 1;
         }else{
             direction = 1;
-            setSpeedY(1);
+            setSpeedY(1*tank_speed);
             setSpeedX(0);            
            setImg(1);
         }
@@ -103,7 +114,7 @@ public class Tank extends GameObject{
            // direction = 2;
         }else{
             direction = 2;
-            setSpeedX(-1);
+            setSpeedX(-1*tank_speed);
             setSpeedY(0);
             setImg(2); // left img
         }
@@ -115,7 +126,7 @@ public class Tank extends GameObject{
            // direction = 3;
         }else{
             direction = 3;
-            setSpeedX(1);
+            setSpeedX(1*tank_speed);
             setSpeedY(0);
             setImg(3); // left img
         }
@@ -133,3 +144,11 @@ public class Tank extends GameObject{
     }
 
 }
+    
+    
+    
+    
+    
+    
+    
+
