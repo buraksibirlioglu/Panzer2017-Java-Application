@@ -59,6 +59,7 @@ public class Panzer2017 extends Application implements  EventHandler<KeyEvent>  
         creditsImage     =  (ImageView) ((AnchorPane) root).getChildren().get(6);
         
         scene = new Scene(root);
+
                 		//Initialize pane that will be used for specific scene!
       
        // scene.setOnKeyPressed(this);   
@@ -191,4 +192,5 @@ public class Panzer2017 extends Application implements  EventHandler<KeyEvent>  
         }
      }
     
+
 }

@@ -6,6 +6,7 @@
  */
 package panzer.brainClass;
 
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,7 +17,9 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -34,6 +37,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 //import panzer.entities.Bonus;
 import panzer.entities.Brick;
@@ -49,12 +53,13 @@ import panzer.entities.Map;
 import panzer.entities.PlayerCastle;
 import panzer.pkg2017.MainMenuController;
 import panzer.pkg2017.Panzer2017;
+import sun.plugin.javascript.navig4.Window;
 
 /**
  *
  * @author Ndricim Rrapi
  */
-public class GameEngine {
+public class GameEngine{
     PlayerTank playerTank;
     EnemyTank enemyTank;
     ArrayList<EnemyTank> enemyTankList;
@@ -69,6 +74,11 @@ public class GameEngine {
     boolean drawBottomBar = true;
     boolean isStop=false;
     int level;
+    boolean win=false;
+    boolean loss=false;
+    Canvas canvas;
+    static boolean exit;
+   
   
             
    // Constructor   
@@ -76,6 +86,7 @@ public class GameEngine {
         allObjectsList = new ArrayList<>();
         timer = new MyAnimationTimer();
         level=1;
+        exit=false;
         
         
     }
@@ -88,6 +99,7 @@ public class GameEngine {
     public void initializeLevel1(){
         try {
             map = new Map(100,600,level);
+            System.out.println("level map "+level);
         } catch (IOException ex) {
             Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -234,19 +246,43 @@ public class GameEngine {
                    getPlayerTank().moveLeft(true);
                   break;
                case P:
-                   if(isStop==false){
                     timer.stop();
-                    isStop=true;
-                   }
-                   else{
-                    timer.start();
-                    isStop=false;
-                   }
+                try {
+                    Parent root = FXMLLoader.load(Panzer2017.class.getResource("PauseMenu.fxml"));
+                    Scene nnew=new Scene(root);                    
+                    Stage pause_stage=new Stage();
+                    pause_stage.setTitle("Pause Menu");
+                    pause_stage.setScene(nnew);
+                    pause_stage.show();
+                    pause_stage.setOnHidden(t -> {
+                        try {
+                            pauseMenu();
+                        } catch (IOException ex) {
+                            Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+
+                } catch (IOException ex) {
+                    Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
+                }                
                    break;
             }
         }
     }
-     
+    public void pauseMenu() throws IOException{
+        System.out.println(exit);
+        if(exit==false){
+            System.out.println("menu1");
+            timer.start();}
+        else{
+        System.out.println("menu2");
+        canvas.getScene().getWindow().hide();
+        Parent root = FXMLLoader.load(Panzer2017.class.getResource("MainMenu.fxml"));
+        Scene nnew=new Scene(root);                    
+        Stage pause_stage=new Stage();
+        pause_stage.setScene(nnew);
+        pause_stage.show();}
+    } 
     // The timer which runs the code on a certain framerate to offer smooth gameplay 
     public class MyAnimationTimer extends AnimationTimer{
         Canvas thisCanvas;
@@ -271,8 +307,14 @@ public class GameEngine {
             oldNanoTime1 = System.nanoTime(); // update old nano time
             if(previosTime1 / 1000000.0 > 8){
                 previosTime1 = 0;
-             //   System.out.println("time");
-                handleCollision(gc); 
+                try {
+                    //   System.out.println("time");
+                    handleCollision(gc);
+                } catch (IOException ex) {
+                    Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
+                }
                   drawAllObjectsOnScren(gc,points,time,drawBottomBar);                         
             }
             
@@ -350,6 +392,7 @@ public class GameEngine {
              g.setStroke(Color.RED);
             g.setLineWidth(1);
             g.strokeLine(0, 601, 1000, 601);
+            canvas=g.getCanvas();
            if(drawKings){
             g.drawImage(new Image(Panzer2017.class.getResource("images/player_king.png").toExternalForm(),30,40,false,false), 15, 605);
             g.drawImage(new Image(Panzer2017.class.getResource("images/enemy_king.png").toExternalForm(),30,40,false,false), 955, 605);
@@ -502,7 +545,7 @@ public class GameEngine {
     }
     
     //decided what happens when object collide
-    public void handleCollision(GraphicsContext c){
+    public void handleCollision(GraphicsContext c) throws IOException, Exception{
         for(int i = 0 ; i < allObjectsList.size() ; i++){
             for(int j = 0 ; j < allObjectsList.size() ; j++){
                 if(i == j) continue;
@@ -679,7 +722,15 @@ public class GameEngine {
                                 allObjectsList.remove(j);
                                 c.clearRect(0, 0, 1000, 600);
                                 timer.stop();
-                                showDialog( "PANZER 2017", "Congratulations!!", "YOU WON THE GAME!" );                                    
+                                showDialog( "PANZER 2017", "Congratulations!!", "YOU WON THE GAME!" );
+                                win=true;
+                                if(level<3){
+                                    level++;
+                                System.out.println("level");
+                                allObjectsList = new ArrayList<>();
+                                this.initializeLevel1();}
+                                System.out.println("level");
+                                
                             }                            
                         }
                     }if(obj1 instanceof Bullet && obj2 instanceof PlayerCastle){
@@ -794,14 +845,31 @@ public class GameEngine {
         }
     }
         
-    private void showDialog( String title, String header, String content ){
+    private void showDialog( String title, String header, String content ) throws Exception{
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
-       // ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(icon);
-         alert.setOnHidden(evt -> Platform.exit());
-        alert.show();
-    }  
+        if(content.equalsIgnoreCase("YOU WON THE GAME!")&&level<3)
+            alert.setOnHidden(evt -> timer.start());
+        else{
+            alert.setOnHidden(evt -> Platform.exit());
 
+        }
+       // ((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(icon);
+        alert.show();
+        
+    }
+    
+   public void on_continue_pressed(ActionEvent e){
+       Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+       app_stage.hide();
+     
+   }
+
+   public void on_exit_pressed(ActionEvent e){       
+       Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+       exit=true;
+       app_stage.hide();
+   }
 }

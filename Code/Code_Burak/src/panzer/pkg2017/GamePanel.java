@@ -75,7 +75,6 @@ public class GamePanel extends Scene{
         GraphicsContext g = canvas.getGraphicsContext2D();
         engine.initializeLevel1();
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());       
-       
         this.setOnKeyPressed(engine.new HandleKeyPressed());
         this.setOnKeyReleased(engine.new HandleKeyReleased());
         engine.timer.setGraphics(g);
@@ -83,5 +82,6 @@ public class GamePanel extends Scene{
         engine.timer.start();
         root.getChildren().add(gameBox);
     }
+
 }
 
