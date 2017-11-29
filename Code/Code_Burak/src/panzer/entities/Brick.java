@@ -21,9 +21,25 @@ import panzer.pkg2017.Panzer2017;
 public class Brick extends GameObject{
     private int life;
     private int type;
-    public Brick(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height) {
+    public Brick(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height,int type) {
         super(_isAlive, _coordinateX, _coordinateY, width, height);
-        setCustomImg(new Image(Panzer2017.class.getResource("images/brown_brick.png").toExternalForm(),40,40,false,false));
+        if(type==1){
+            setCustomImg(new Image(Panzer2017.class.getResource("images/brown_brick.png").toExternalForm(),40,40,false,false));
+            life=1;
+        }
+        else if(type==2){
+            setCustomImg(new Image(Panzer2017.class.getResource("images/green_brick.png").toExternalForm(),40,40,false,false));
+            life=2;
+        }
+        else if(type==4){
+            setCustomImg(new Image(Panzer2017.class.getResource("images/gray_brick.png").toExternalForm(),40,40,false,false));
+            life=999999;
+        }
+        else if(type==3){
+            setCustomImg(new Image(Panzer2017.class.getResource("images/red_brick.png").toExternalForm(),40,40,false,false));
+            life=3;
+        }
+        
     }
     public int getLife()
     {

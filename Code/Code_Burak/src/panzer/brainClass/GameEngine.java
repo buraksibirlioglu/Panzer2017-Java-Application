@@ -70,7 +70,6 @@ public class GameEngine{
     Map map;
     Image imageEnemy;
     ArrayList<Bullet> bulletList;
-    int points;
     boolean drawBottomBar = true;
     boolean isStop=false;
     int level;
@@ -78,6 +77,7 @@ public class GameEngine{
     boolean loss=false;
     Canvas canvas;
     static boolean exit;
+    int point;
    
   
             
@@ -167,17 +167,33 @@ public class GameEngine{
     // assigning initial location of enemy tanks
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
-        enemies.add(createSingleEnemyTank(820,250));
-        enemies.add(createSingleEnemyTank(800,350));
-        enemies.add(createSingleEnemyTank(850,400));
-        enemies.add(createSingleEnemyTank(800,150));
-        enemies.add(createSingleEnemyTank(810,50));
-        enemies.add(createSingleEnemyTank(850,450));
+        if(level==1){
+        enemies.add(createSingleEnemyTank(820,250,1));
+        enemies.add(createSingleEnemyTank(800,350,1));
+        enemies.add(createSingleEnemyTank(850,400,1));
+        enemies.add(createSingleEnemyTank(800,150,1));
+        enemies.add(createSingleEnemyTank(810,50,1));
+        enemies.add(createSingleEnemyTank(850,450,1));}
+        else if(level==2){
+        enemies.add(createSingleEnemyTank(820,250,2));
+        enemies.add(createSingleEnemyTank(800,350,1));
+        enemies.add(createSingleEnemyTank(850,400,2));
+        enemies.add(createSingleEnemyTank(800,150,2));
+        enemies.add(createSingleEnemyTank(810,50,1));
+        enemies.add(createSingleEnemyTank(850,450,2));}
+        else if(level==3){
+        enemies.add(createSingleEnemyTank(820,250,3));
+        enemies.add(createSingleEnemyTank(800,350,2));
+        enemies.add(createSingleEnemyTank(850,400,3));
+        enemies.add(createSingleEnemyTank(800,150,2));
+        enemies.add(createSingleEnemyTank(810,50,3));
+        enemies.add(createSingleEnemyTank(850,450,2));}
+        
         return enemies;
     }
     
-    private EnemyTank createSingleEnemyTank(float x, float y){
-        EnemyTank temp = new EnemyTank(true, x, y,38, 38,21);      
+    private EnemyTank createSingleEnemyTank(float x, float y,int type){
+        EnemyTank temp = new EnemyTank(true, x, y,38, 38,type,type);      
         return temp;
     }
         
@@ -301,7 +317,7 @@ public class GameEngine{
             gc.clearRect(0, 0, 1000, 600);
          
             gc.clearRect(390, 0, 104, 650); 
-            drawAllObjectsOnScren(gc,points,time,drawBottomBar);          
+            drawAllObjectsOnScren(gc,time,drawBottomBar);          
             
              previosTime1 += System.nanoTime() - oldNanoTime;
             oldNanoTime1 = System.nanoTime(); // update old nano time
@@ -315,7 +331,7 @@ public class GameEngine{
                 } catch (Exception ex) {
                     Logger.getLogger(GameEngine.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                  drawAllObjectsOnScren(gc,points,time,drawBottomBar);                         
+                  drawAllObjectsOnScren(gc,time,drawBottomBar);                         
             }
             
           //enemyTank.update(1);
@@ -376,7 +392,7 @@ public class GameEngine{
             }
         }
        
-        public void drawAllObjectsOnScren(GraphicsContext g,int point,int time, boolean drawKings){
+        public void drawAllObjectsOnScren(GraphicsContext g,int time, boolean drawKings){
            for(int i = 0; i < getAllObjectsList().size() ; i++){
                 GameObject o = getAllObjectsList().get(i);
 			if(o.isAlive()){
@@ -619,39 +635,48 @@ public class GameEngine{
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
                         //if(obj2 instanceof GrassTile) continue;
+                        Brick a=(Brick)obj2;
+                        a.setLife(a.getLife()-1);
                         
-                        obj2.setAlive(false);
+                        if(a.getLife()==0){
+                            System.out.println(a.getLife());
+                            allObjectsList.remove(j);
+                            obj2.setAlive(false);}
+                        
                         obj1.setAlive(false);
                          Bullet b = (Bullet)obj1;
                          b.setSpeedX(0);
                          b.setSpeedY(0);
                         System.out.println("shotttt");
-                        allObjectsList.remove(j);
+                        
                         MediaPlayer mediaPlayer;
                         Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
                         mediaPlayer = new MediaPlayer(sound);  
                         mediaPlayer.play();
                         if(b.getBulletOwner()== b.getBulletOwner())
-                            points++;
+                            point++;
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof EnemyTank){                   
                          Bullet b = (Bullet)obj1;
                         if(b.getBulletOwner()==getPlayerTank()){
-                            obj2.setAlive(false);
                             obj1.setAlive(false);
                             b.setSpeedX(0);
                             b.setSpeedY(0);
-                            System.out.println("shotttt Enemy");                       
-                            EnemyTank t = (EnemyTank)obj2;
+                            System.out.println("shotttt Enemy");
+                            Tank t = (Tank)obj2;
+                            t.setLife(t.getLife()-1);
+                            System.out.println(t.getLife());
+                            if(t.getLife()==0){                               
+                            obj2.setAlive(false);
                             t.setSpeedX(0);
                             t.setSpeedY(0);
                             allObjectsList.get(j).setAlive(false);
-                            allObjectsList.remove(j);
+                            allObjectsList.remove(j);}
                             MediaPlayer mediaPlayer;
                             Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
                             mediaPlayer = new MediaPlayer(sound);  
                             mediaPlayer.play();
-                            points+=50;
+                            point+=50;
                         }
                     }
                      if(obj1 instanceof Bullet && obj2 instanceof PlayerTank){                   
@@ -705,7 +730,7 @@ public class GameEngine{
                             b.setSpeedY(0);
                             System.out.println("done---------");
                             drawBottomBar = true;
-                            points += 40;
+                            point += 40;
                             if (temp.getLife() == 50)
                                 setImageEnemy(new Image(Panzer2017.class.getResource("images/health_bar_king_enemy2.png").toExternalForm(),250,40,false,false));
                             else if (temp.getLife() == 40)

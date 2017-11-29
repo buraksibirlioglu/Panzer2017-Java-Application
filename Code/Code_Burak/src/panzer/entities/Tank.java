@@ -19,6 +19,7 @@ import panzer.pkg2017.Panzer2017;
  */
 public class Tank extends GameObject{
     private int life;
+    private int speed;
     //Bullet this bullet 
      Bullet myBullet;
 
@@ -27,9 +28,10 @@ public class Tank extends GameObject{
     private boolean moving;
 
 
-    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life) {
+    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life,int speed) {
         super(_isAlive, _coordinateX, _coordinateY, width, height);  
         this.life = life;
+        this.speed=speed;
     }      
     
  
@@ -79,7 +81,7 @@ public class Tank extends GameObject{
             //direction = 0;
         }else{
             direction = 0;
-            setSpeedY(-1);
+            setSpeedY(-speed);
             setSpeedX(0);
            setImg(0);// up img
         }    
@@ -91,7 +93,7 @@ public class Tank extends GameObject{
            // direction = 1;
         }else{
             direction = 1;
-            setSpeedY(1);
+            setSpeedY(speed);
             setSpeedX(0);            
            setImg(1);
         }
@@ -103,7 +105,7 @@ public class Tank extends GameObject{
            // direction = 2;
         }else{
             direction = 2;
-            setSpeedX(-1);
+            setSpeedX(-speed);
             setSpeedY(0);
             setImg(2); // left img
         }
@@ -115,7 +117,7 @@ public class Tank extends GameObject{
            // direction = 3;
         }else{
             direction = 3;
-            setSpeedX(1);
+            setSpeedX(speed);
             setSpeedY(0);
             setImg(3); // left img
         }

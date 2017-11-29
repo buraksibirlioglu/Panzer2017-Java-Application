@@ -20,8 +20,8 @@ public class PlayerTank extends Tank {
     private ArrayList<Image> life_2 = new ArrayList<>();
     private ArrayList<Image> life_1 = new ArrayList<>();
     
-    public PlayerTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height,   int life) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, life);
+    public PlayerTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height,int life) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height, life,1);
         setIcons();
         setIconArrayList(get5LifeIconImages());
          setCustomImg(life_5.get(0));

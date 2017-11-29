@@ -20,12 +20,14 @@ public class EnemyTank extends Tank {
     private boolean frozenState;
     private ArrayList<Image> life_enemy = new ArrayList<>();  
     private int bulletType;
+    private int speed;
     
-    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, life);
-        setEnemyIcons();
+    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life,int type) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height, life,type);
+        setEnemyIcons(type);
         setIconArrayList(life_enemy);
         setCustomImg(life_enemy.get(0));
+
     }
     
     // detects if the player's castle is near to this enemy tank
@@ -54,11 +56,31 @@ public class EnemyTank extends Tank {
     public boolean isFrozenState() {
         return frozenState;
     }
-     private void setEnemyIcons(){
+     private void setEnemyIcons(int type){
+         if(type==1){
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
+         }
+         else if(type==2){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy2.jpg").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
+         }
+        else if(type==3){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy3.jpg").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
+         }
+        else if(type==4){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
+         }
       }
     
 }

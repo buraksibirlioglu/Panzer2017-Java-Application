@@ -46,7 +46,7 @@ public class Map {
             for(int j = 0; j < col; j++){
                 brickMap[i][j] = Integer.parseInt(numbers[j]); 
                 if( brickMap[i][j] != 0 ) {
-                    Brick B = new Brick(true, 40*j, 40*i,40, 40);
+                    Brick B = new Brick(true, 40*j, 40*i,40, 40,brickMap[i][j]);
                     bricks.add(B);
                 }
             }
