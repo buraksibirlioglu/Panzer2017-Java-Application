@@ -153,14 +153,14 @@ public class GameEngine {
         temp.add(new FullHealthBonus(true, 300,300,38,38 ));
         temp.add(new FullHealthBonus(true, 500,400,38,38 ));
         temp.add(new FullHealthBonus(true, 500,500,38,38 ));
-        
-            temp.add(new ProtectionBonus(true, 250,250,38,38 ));
-              temp.add(new SpeedBonus(true, 200,250,38,38 ));
+        temp.add(new ProtectionBonus(true, 250,250,38,38 ));
+        temp.add(new SpeedBonus(true, 200,250,38,38 ));
+        temp.add(new FastBulletBonus(true, 200,250,38,38 ));
+        temp.add(new FastBulletBonus(true, 2500,250,38,38 ));
         return temp;
     }
     
-   
-    
+       
     public ArrayList<Bonus> getBonusList() {
         return bonusList;
     }
@@ -380,6 +380,8 @@ public class GameEngine {
                         getPlayerTank().setTank_speed(1);
                     if(getPlayerTank().hasShieldProtection()){
                         getPlayerTank().setShieldProtection(false);
+                    }if(getPlayerTank().hasSuperBullet()){
+                        getPlayerTank().setHasSuperBullet(false);
                     }
                 }
             }            
@@ -408,7 +410,7 @@ public class GameEngine {
             }
         }
        
-        public void drawAllObjectsOnScren(GraphicsContext g,int point,int time, boolean drawKings){
+        public void drawAllObjectsOnScren(GraphicsContext g,int point,int time, boolean drawKings)  {
            for(int i = 0; i < getAllObjectsList().size() ; i++){
                 GameObject o = getAllObjectsList().get(i);
 			if(o.isAlive()){
@@ -861,7 +863,7 @@ public class GameEngine {
                                 thisBonus.setDuration(-1);
                                 getPlayerTank().incrementMyBonusDuration();
                                 thisBonus.setBrute_destroy(true);
-                            }else if(thisBonus instanceof FullHealthBonus){
+                            }else if(thisBonus instanceof FullHealthBonus){ // finished
                                 thisBonus.setDuration(-1);                                
                                 thisBonus.setBrute_destroy(true);
                                 getPlayerTank().setLife(5);
@@ -869,10 +871,11 @@ public class GameEngine {
                                 setHealthBarPlayerCastle(new Image(Panzer2017.class.getResource("images/health_bar_king1.png").toExternalForm(),250,40,false,false));
                                 getPlayerTank().setIconArrayList(getPlayerTank().get5LifeIconImages());
                                 drawBottomBar= true;
-                            }else if (thisBonus instanceof FastBulletBonus){
+                            }else if (thisBonus instanceof FastBulletBonus){ 
                                 thisBonus.setDuration(-1);
                                 getPlayerTank().incrementMyBonusDuration();
                                 thisBonus.setBrute_destroy(true);
+                                getPlayerTank().setHasSuperBullet(true);
                             }                            
                         }                    
                     }
