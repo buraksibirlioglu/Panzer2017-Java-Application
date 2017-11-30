@@ -171,17 +171,17 @@ public class GameEngine {
     // assigning initial location of enemy tanks
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
-        enemies.add(createSingleEnemyTank(820,250,1,3,false));
-        enemies.add(createSingleEnemyTank(800,350,2,1,true));
-        enemies.add(createSingleEnemyTank(850,400,1,1,false));
-        enemies.add(createSingleEnemyTank(800,150,3,1,true));
-        enemies.add(createSingleEnemyTank(810,50, 2,3,false));
-        enemies.add(createSingleEnemyTank(850,450,1,3,true));
+        enemies.add(createSingleEnemyTank(820,250,1,1,1));//type 1 = normal tanks
+        enemies.add(createSingleEnemyTank(800,350,1,3,2));//type 2 = fast tanks
+        enemies.add(createSingleEnemyTank(850,400,5,1,3));//type 3 = life points = 5
+        enemies.add(createSingleEnemyTank(800,150,1,1,4));//
+        enemies.add(createSingleEnemyTank(810,50, 1,1,4));
+        enemies.add(createSingleEnemyTank(850,450,1,1,4));
         return enemies;
     }
     
-    private EnemyTank createSingleEnemyTank(float x, float y, int lifepoints , int speed_of_tank,boolean ice_shooter){
-        EnemyTank temp = new EnemyTank(true, x, y,38, 38,lifepoints,speed_of_tank,ice_shooter);   
+    private EnemyTank createSingleEnemyTank(float x, float y, int lifepoints , int speed_of_tank,int enemyType){
+        EnemyTank temp = new EnemyTank(true, x, y,38, 38,lifepoints,speed_of_tank,enemyType);   
         return temp;
     }
         
@@ -752,21 +752,27 @@ public class GameEngine {
                                 mediaPlayer = new MediaPlayer(sound);  
                                 mediaPlayer.play();
                             }else if (b instanceof MetalBullet){
-                                obj2.setAlive(false);
                                 obj1.setAlive(false);
                                 b.setSpeedX(0);
                                 b.setSpeedY(0);
                                 System.out.println("shotttt Enemy");                       
                                 EnemyTank t = (EnemyTank)obj2;
-                                t.setSpeedX(0);
-                                t.setSpeedY(0);
-                                allObjectsList.get(j).setAlive(false);
-                                allObjectsList.remove(j);
-                                for(int m = 0; m<enemyTankList.size();m++){
-                                    if(!enemyTankList.get(m).isAlive()){
-                                        enemyTankList.remove(m);
+                                   allObjectsList.remove(i);
+                                if(t.getLife() >=1){
+                                    System.out.println("LIFE = "+ t.getLife());
+                                    t.setLife(t.getLife()-1);// decrement life
+                                    if (t.getLife() == 0){
+                                        t.setAlive(false);
+                                        allObjectsList.get(j).setAlive(false);
+                                        allObjectsList.remove(j);
+                                        for(int m = 0; m<enemyTankList.size();m++){
+                                            if(!enemyTankList.get(m).isAlive()){
+                                                enemyTankList.remove(m);
+                                            }
+                                        }
                                     }
                                 }
+                               
                                 MediaPlayer mediaPlayer;
                                 Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
                                 mediaPlayer = new MediaPlayer(sound);  
@@ -1103,13 +1109,14 @@ public class GameEngine {
                 pause_stage.show();
           }
     }
+  
     public void on_continue_pressed(ActionEvent e){
        Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
        app_stage.hide();
      
    }
 
-   public void on_exit_pressed(ActionEvent e){       
+    public void on_exit_pressed(ActionEvent e){       
        Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
        exit=true;
        app_stage.hide();

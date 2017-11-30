@@ -21,13 +21,14 @@ public class EnemyTank extends Tank {
  
     private ArrayList<Image> life_enemy = new ArrayList<>();  
     
-    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life, int speed_of_tank, boolean ice_shooter) {
+    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life, int speed_of_tank, int enemyType) {
         super(_isAlive, _coordinateX, _coordinateY, width, height, life);
-        setEnemyIcons();
+        setEnemyIcons(enemyType);
         setIconArrayList(life_enemy);
         setCustomImg(life_enemy.get(0));
         setTank_speed(speed_of_tank);
-        iceBullet = ice_shooter ;
+        if(enemyType==4)
+           iceBullet = true ;
     }
     
     // detects if the player's castle is near to this enemy tank
@@ -37,7 +38,6 @@ public class EnemyTank extends Tank {
     
     // detects if the player tank is near to this enemy tank
     public boolean playerIsNear(PlayerTank t){
-      
         if (t.getCoordinateX() + t.getWidth() - this.getCoordinateX()+this.getWidth() < 10 ){
             return true;
         }
@@ -47,13 +47,28 @@ public class EnemyTank extends Tank {
         return false;   
     }
     
- 
-    
-     private void setEnemyIcons(){
-        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm(),38,38,false,false));
-        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
-        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
-        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
+    private void setEnemyIcons(int enemyType){
+        if(enemyType == 1){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_normal_up.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_normal_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_normal_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_normal_right.png").toExternalForm(),38,38,false,false));
+        } else if(enemyType == 2){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_fast_up.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_fast_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_fast_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_fast_right.png").toExternalForm(),38,38,false,false));
+        }else if(enemyType == 3){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_powerful_up.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_powerful_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_powerful_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_powerful_right.png").toExternalForm(),38,38,false,false));
+        }else if(enemyType == 4){
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_ice_up.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_ice_down.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_ice_left.png").toExternalForm(),38,38,false,false));
+        life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy_ice_right.png").toExternalForm(),38,38,false,false));
+        }
     }
     
     public ArrayList<Image> getEnemyImages() {
