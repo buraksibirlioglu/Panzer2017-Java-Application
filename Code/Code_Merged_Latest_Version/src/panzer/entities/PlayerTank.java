@@ -7,6 +7,7 @@ package panzer.entities;
 
 import java.util.ArrayList;
 import javafx.scene.image.Image;
+import panzer.brainClass.GameEngine;
 import panzer.pkg2017.Panzer2017;
 
 /**
@@ -14,17 +15,66 @@ import panzer.pkg2017.Panzer2017;
  * @author Ndricim Rrapi
  */
 public class PlayerTank extends Tank {
-     private ArrayList<Image> life_5 = new ArrayList<>();  
-    private ArrayList<Image> life_4 = new ArrayList<>();  
+    private ArrayList<Image> life_5 = new ArrayList<>();
+    private ArrayList<Image> life_4 = new ArrayList<>();
     private ArrayList<Image> life_3 = new ArrayList<>();
     private ArrayList<Image> life_2 = new ArrayList<>();
     private ArrayList<Image> life_1 = new ArrayList<>();
-    
+    private long my_bonus_duration;
+    private boolean hasShieldProtection;
+   
     public PlayerTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height,   int life) {
         super(_isAlive, _coordinateX, _coordinateY, width, height, life);
         setIcons();
         setIconArrayList(get5LifeIconImages());
-         setCustomImg(life_5.get(0));
+        setCustomImg(life_5.get(0));
+        my_bonus_duration = 0;
+        //hasShieldProtection = false;
+    }
+    
+    public void setShieldProtection(boolean hasShieldProtection) {
+        this.hasShieldProtection = hasShieldProtection;
+    }
+
+    public boolean hasShieldProtection() {
+        return hasShieldProtection;
+    }
+    
+    public void decrementMyBonusDuration() {
+        this.my_bonus_duration = this.my_bonus_duration-1032;
+    }
+
+    public void incrementMyBonusDuration() {
+        this.my_bonus_duration = 1000000;
+    }
+    
+    public void incrementLifeBonusDuration(){
+         this.my_bonus_duration = 1032;
+    }
+    
+    public long getMyBonusDuration() {
+        return my_bonus_duration;
+    }
+    
+    public void shootMetal(GameEngine engine){
+        int speed=0, range=0;       
+        if(hasSuperBullet){ speed = 10; range = 700;}
+        if(!hasSuperBullet){ speed = 5; range = 500;}    
+        Bullet bullet = new MetalBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, range, speed);
+        engine.getAllObjectsList().add(bullet);
+        engine.getBulletList().add(bullet);
+        myBullet = bullet;
+        feuer(engine);
+    }
+    public void shootIce(GameEngine engine){
+        Bullet bullet= null;
+        if(hasIceBullet()){
+            bullet = new IceBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
+            engine.getAllObjectsList().add(bullet);
+            engine.getBulletList().add(bullet);
+            myBullet = bullet;
+            feuer(engine); // boom
+        }
     }
     
     private void setIcons(){

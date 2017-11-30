@@ -18,33 +18,33 @@ public class Bullet extends GameObject{
   
     Tank master;
     
-    public Bullet(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, Tank master, int direction, int range) {
+    public Bullet(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, Tank master, int direction, int range, int speed) {
         super(_isAlive, _coordinateX, _coordinateY, width, height);
         this.direction = direction;
         this.range = range;
         this.master = master;
-        setCustomImg(new Image(Panzer2017.class.getResource("images/bullet.png").toExternalForm(),10,10,false,false));
+  
       
         if(direction == 0){ // tank looking upwards
             setCoordinateX(_coordinateX+14);
             setCoordinateY(_coordinateY);
-            speedX = 0.0f;
-            speedY = -5f;
+            speedX = 0;
+            speedY = -1*speed;
         }else if(direction == 1){ // tank looking down
             setCoordinateX(_coordinateX+14);
             setCoordinateY(_coordinateY+34);
-            speedY = 5f;
-            speedX = 0.0f;
+            speedY = 1*speed;
+            speedX = 0;
            
         }else if(direction == 2){// tank looking left
             setCoordinateX(_coordinateX);
             setCoordinateY(_coordinateY+14);
-            speedX = -5;
+            speedX = -1*speed;
             speedY = 0;
         }else if(direction == 3){// tank looking right
             setCoordinateX(_coordinateX+34);
             setCoordinateY(_coordinateY+14);
-            speedX = 5f;
+            speedX = 1*speed;
             speedY = 0;
         }
         
@@ -55,15 +55,14 @@ public class Bullet extends GameObject{
         }
         
         public void decrementBulletRange(){
-            range-=15;
+            range -= 15;
         }
         
         public double getRange() {
-             return range;
+            return range;
         }
         
         public void setRange(double range) {
             this.range = range;
         }
-
 }

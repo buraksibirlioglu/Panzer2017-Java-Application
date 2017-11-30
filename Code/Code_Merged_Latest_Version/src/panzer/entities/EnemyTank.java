@@ -8,6 +8,7 @@ package panzer.entities;
 
 import java.util.ArrayList;
 import javafx.scene.image.Image;
+import panzer.brainClass.GameEngine;
 import panzer.entities.PlayerTank;
 import panzer.entities.Tank;
 import panzer.pkg2017.Panzer2017;
@@ -59,6 +60,26 @@ public class EnemyTank extends Tank {
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
-      }
+             
+         
+     }
     
+    public void shootEnemyMetal(GameEngine engine){
+        Bullet bullet = new MetalBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
+        engine.getAllObjectsList().add(bullet);
+        engine.getBulletList().add(bullet);
+        myBullet = bullet;
+        feuer(engine);
+    }
+    
+    public void shootEnemyIce(GameEngine engine){
+        Bullet bullet= null;
+        if(hasIceBullet()){
+            bullet = new IceBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
+            engine.getAllObjectsList().add(bullet);
+            engine.getBulletList().add(bullet);
+            myBullet = bullet;
+            feuer(engine); // boom
+        }
+    }
 }

@@ -44,7 +44,9 @@ import panzer.entities.EnemyTank;
 import panzer.entities.FastBulletBonus;
 import panzer.entities.FullHealthBonus;
 import panzer.entities.GameObject;
+import panzer.entities.IceBullet;
 import panzer.entities.Map;
+import panzer.entities.MetalBullet;
 import panzer.entities.PlayerCastle;
 import panzer.entities.ProtectionBonus;
 import panzer.entities.SpeedBonus;
@@ -140,23 +142,16 @@ public class GameEngine {
         temp.add(new EnemyFreezeBonus(true, 100,100,38,38 ));
         temp.add(new FastBulletBonus(true, 200,500,38,38 ));
         temp.add(new FullHealthBonus(true, 500,200,38,38 ));
-        temp.add(new ProtectionBonus(true, 450,500,38,38 ));       
-        temp.add(new EnemyFreezeBonus(true, 100,100,38,38 ));
-        temp.add(new FastBulletBonus(true, 200,500,38,38 ));
-        temp.add(new SpeedBonus(true, 10,10,38,38 ));
-        temp.add(new FullHealthBonus(true, 500,200,38,38 ));
-        temp.add(new SpeedBonus(true, 10,10,38,38 ));
-        temp.add(new ProtectionBonus(true, 450,500,38,38 ));
-        temp.add(new SpeedBonus(true, 10,10,38,38 ));
-        temp.add(new ProtectionBonus(true, 400,200,38,38 ));
-        temp.add(new SpeedBonus(true, 10,10,38,38 ));
-        temp.add(new FullHealthBonus(true, 300,300,38,38 ));
+       
         temp.add(new FullHealthBonus(true, 500,400,38,38 ));
         temp.add(new FullHealthBonus(true, 500,500,38,38 ));
         temp.add(new ProtectionBonus(true, 250,250,38,38 ));
         temp.add(new SpeedBonus(true, 200,250,38,38 ));
         temp.add(new FastBulletBonus(true, 200,250,38,38 ));
-        temp.add(new FastBulletBonus(true, 2500,250,38,38 ));
+        temp.add(new FastBulletBonus(true, 250,250,38,38 ));
+         temp.add(new EnemyFreezeBonus(true, 100,100,38,38 ));
+          temp.add(new EnemyFreezeBonus(true, 250,250,38,38 ));
+            temp.add(new EnemyFreezeBonus(true, 250,250,38,38 ));
         return temp;
     }
     
@@ -382,6 +377,8 @@ public class GameEngine {
                         getPlayerTank().setShieldProtection(false);
                     }if(getPlayerTank().hasSuperBullet()){
                         getPlayerTank().setHasSuperBullet(false);
+                    }if(getPlayerTank().hasIceBullet()){
+                        getPlayerTank().setHasIceBullet(false);
                     }
                 }
             }            
@@ -703,26 +700,48 @@ public class GameEngine {
                     if(obj1 instanceof Bullet && obj2 instanceof EnemyTank){                   
                          Bullet b = (Bullet)obj1;
                         if(b.getBulletOwner()==getPlayerTank()){
-                            obj2.setAlive(false);
-                            obj1.setAlive(false);
-                            b.setSpeedX(0);
-                            b.setSpeedY(0);
-                            System.out.println("shotttt Enemy");                       
-                            EnemyTank t = (EnemyTank)obj2;
-                            t.setSpeedX(0);
-                            t.setSpeedY(0);
-                            allObjectsList.get(j).setAlive(false);
-                            allObjectsList.remove(j);
-                            for(int m = 0; m<enemyTankList.size();m++){
-                                if(!enemyTankList.get(m).isAlive()){
-                                    enemyTankList.remove(m);
+                            if(b instanceof IceBullet){
+                                obj2.setAlive(false);
+                                obj1.setAlive(false);
+                                b.setSpeedX(0);
+                                b.setSpeedY(0);
+                                System.out.println("shotttt Enemy");                       
+                                EnemyTank t = (EnemyTank)obj2;
+                                t.setSpeedX(0);
+                                t.setSpeedY(0);
+                                allObjectsList.get(j).setAlive(false);
+                                allObjectsList.remove(j);
+                                for(int m = 0; m<enemyTankList.size();m++){
+                                    if(!enemyTankList.get(m).isAlive()){
+                                        enemyTankList.remove(m);
+                                    }
                                 }
+                                MediaPlayer mediaPlayer;
+                                Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
+                                mediaPlayer = new MediaPlayer(sound);  
+                                mediaPlayer.play();
+                            }else if (b instanceof MetalBullet){
+                                 obj2.setAlive(false);
+                                obj1.setAlive(false);
+                                b.setSpeedX(0);
+                                b.setSpeedY(0);
+                                System.out.println("shotttt Enemy");                       
+                                EnemyTank t = (EnemyTank)obj2;
+                                t.setSpeedX(0);
+                                t.setSpeedY(0);
+                                allObjectsList.get(j).setAlive(false);
+                                allObjectsList.remove(j);
+                                for(int m = 0; m<enemyTankList.size();m++){
+                                    if(!enemyTankList.get(m).isAlive()){
+                                        enemyTankList.remove(m);
+                                    }
+                                }
+                                MediaPlayer mediaPlayer;
+                                Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
+                                mediaPlayer = new MediaPlayer(sound);  
+                                mediaPlayer.play();
+                                points+=50;
                             }
-                            MediaPlayer mediaPlayer;
-                            Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
-                            mediaPlayer = new MediaPlayer(sound);  
-                            mediaPlayer.play();
-                            points+=50;
                         }
                     }
                      if(obj1 instanceof Bullet && obj2 instanceof PlayerTank){                   
@@ -863,6 +882,7 @@ public class GameEngine {
                                 thisBonus.setDuration(-1);
                                 getPlayerTank().incrementMyBonusDuration();
                                 thisBonus.setBrute_destroy(true);
+                                getPlayerTank().setHasIceBullet(true);
                             }else if(thisBonus instanceof FullHealthBonus){ // finished
                                 thisBonus.setDuration(-1);                                
                                 thisBonus.setBrute_destroy(true);
@@ -871,11 +891,12 @@ public class GameEngine {
                                 setHealthBarPlayerCastle(new Image(Panzer2017.class.getResource("images/health_bar_king1.png").toExternalForm(),250,40,false,false));
                                 getPlayerTank().setIconArrayList(getPlayerTank().get5LifeIconImages());
                                 drawBottomBar= true;
-                            }else if (thisBonus instanceof FastBulletBonus){ 
+                            }else if (thisBonus instanceof FastBulletBonus){//finished
                                 thisBonus.setDuration(-1);
                                 getPlayerTank().incrementMyBonusDuration();
                                 thisBonus.setBrute_destroy(true);
                                 getPlayerTank().setHasSuperBullet(true);
+                                
                             }                            
                         }                    
                     }

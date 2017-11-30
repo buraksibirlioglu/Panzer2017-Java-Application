@@ -20,13 +20,12 @@ import panzer.pkg2017.Panzer2017;
 public class Tank extends GameObject{
     private int life;
     //Bullet this bullet 
-     Bullet myBullet;
+    Bullet myBullet;
     int tank_speed;
+    boolean hasSuperBullet;
+    boolean iceBullet;
 
-    
-   
-     
-    private int direction; // 0 up , 1 down , 2 left, 3 right 
+    public int direction; // 0 up , 1 down , 2 left, 3 right 
     private boolean moving;
 
 
@@ -43,7 +42,22 @@ public class Tank extends GameObject{
     public int getTank_speed() {
         return tank_speed;
     }
+    
+    public void setHasSuperBullet(boolean hasSuperBullet) {
+        this.hasSuperBullet = hasSuperBullet;
+    }
+    
+    public boolean hasSuperBullet() {
+        return hasSuperBullet;
+    }
 
+     public boolean hasIceBullet() {
+        return iceBullet;
+    }
+
+    public void setHasIceBullet(boolean iceBullet) {
+        this.iceBullet = iceBullet;
+    }
    
     public Bullet getMyBullet() {
         return myBullet;
@@ -71,12 +85,6 @@ public class Tank extends GameObject{
     
     public void feuer(GameEngine engine){
         if(myBullet != null) return;
-                ArrayList<Image> iconList = new ArrayList<>();
-                iconList.add(new Image(Panzer2017.class.getResource("images/bullet.png").toExternalForm(),10,10,false,false));
-		Bullet bullet = new Bullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500);
-		engine.getAllObjectsList().add(bullet);
-		engine.getBulletList().add(bullet);
-		myBullet = bullet;
                 MediaPlayer mediaPlayer;
                 Media sound = new Media(MainMenuController.class.getResource("sound/shoot.mp3").toExternalForm());
                 mediaPlayer = new MediaPlayer(sound);  
