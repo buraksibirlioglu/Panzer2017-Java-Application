@@ -5,11 +5,15 @@
  */
 package panzer.entities;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
+import javax.swing.Timer;
+import panzer.pkg2017.Panzer2017;
 
 /**
  *
@@ -18,12 +22,31 @@ import javafx.util.Duration;
 public class Bonus extends GameObject{
     
     FadeTransition  fadeTransition ;
-   
-    public Bonus(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height, double _speed, ArrayList<Image> _icon) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);
-        fadeTransition = new FadeTransition (Duration.millis(_speed), this.getObjectView());
+    long duration ;
+    boolean brute_destroy;
+
+    public Bonus(boolean _isAlive, double _coordinateX, double _coordinateY, int width, int height) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height);
+          // fadeTransition = new FadeTransition (Duration.millis(_speed), this.getObjectView());
     }
     
+    public void setBrute_destroy(boolean brute_destroy) {
+        this.brute_destroy = brute_destroy;
+    }
+
+    public boolean isBrute_destroy() {
+        return brute_destroy;
+    }
+   
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+    
+    // skip this for now
     public FadeTransition getFadeTransition() {
         return fadeTransition;
     }

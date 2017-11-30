@@ -6,12 +6,9 @@
 package panzer.entities;
 
 import java.util.ArrayList;
-import javafx.animation.TranslateTransition;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 import panzer.brainClass.GameEngine;
 import panzer.pkg2017.MainMenuController;
 import panzer.pkg2017.Panzer2017;
@@ -23,25 +20,79 @@ import panzer.pkg2017.Panzer2017;
 public class Tank extends GameObject{
     private int life;
     //Bullet this bullet 
-     Bullet myBullet;
-
-   
-     
-    private int direction; // 0 up , 1 down , 2 left, 3 right 
+    Bullet myBullet;
+    int tank_speed;
+    boolean hasSuperBullet;
+    boolean iceBullet;
+    private boolean frozenState;
+    private int frozenStateDuration;
+    public int direction; // 0 up , 1 down , 2 left, 3 right 
     private boolean moving;
 
-    public boolean isMoving() {
-        return moving;
-    }
-    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, double _speed, ArrayList<Image> _icon, int life) {
-        super(_isAlive, _coordinateX, _coordinateY, width, height, _speed, _icon);  
+
+    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life) {
+        super(_isAlive, _coordinateX, _coordinateY, width, height);  
         this.life = life;
+        tank_speed = 1;
+    }      
+    
+    public void setTank_speed(int tank_speed) {
+        this.tank_speed = tank_speed;
     }
-      
-     public Bullet getMyBullet() {
+    
+    public int getTank_speed() {
+        return tank_speed;
+    }
+    
+    public void setHasSuperBullet(boolean hasSuperBullet) {
+        this.hasSuperBullet = hasSuperBullet;
+    }
+    
+    public boolean hasSuperBullet() {
+        return hasSuperBullet;
+    }
+
+    public boolean hasIceBullet() {
+        return iceBullet;
+    }
+
+    public void setHasIceBullet(boolean iceBullet) {
+        this.iceBullet = iceBullet;
+    }
+   
+      // sets the state of this enemy tank to frozen/ melted
+    public void setFrozenState(boolean  value){
+        frozenState = value;
+    }
+    
+    //returns frozen state
+    public boolean getFrozenState() {
+        return frozenState;
+    }
+    
+    public int getFrozenStateDuration() {
+        return frozenStateDuration;
+    }
+
+    public void incrementFrozenStateDuration() {
+        this.frozenStateDuration = 500000;
+    }
+    
+    public void decrementFrozenStateDuration() {
+        this.frozenStateDuration -= 1032 ;
+    }
+    public Bullet getMyBullet() {
         return myBullet;
     }
      
+    public int getLife(){
+         return life;
+    }
+    
+    public void setLife(int life){
+        this.life= life;
+    }
+  
     public int getDirection() {
         return direction;
     }
@@ -55,75 +106,71 @@ public class Tank extends GameObject{
     }
     
     public void feuer(GameEngine engine){
-        if(myBullet != null) return;
-                ArrayList<Image> iconList = new ArrayList<>();
-                iconList.add(new Image(Panzer2017.class.getResource("images/bullet.png").toExternalForm(),10,10,false,false));
-		Bullet bullet = new Bullet(true, getCoordinateX(), getCoordinateY(), 10,10, 10, iconList, this, direction, 500);
-		engine.getAllObjectsList().add(bullet);
-		engine.getBulletList().add(bullet);
-		myBullet = bullet;
-                 MediaPlayer mediaPlayer;
-                    Media sound = new Media(MainMenuController.class.getResource("sound/shoot.mp3").toExternalForm());
-                    mediaPlayer = new MediaPlayer(sound);  
-                    mediaPlayer.play();
+                MediaPlayer mediaPlayer;
+                Media sound = new Media(MainMenuController.class.getResource("sound/shoot.mp3").toExternalForm());
+                mediaPlayer = new MediaPlayer(sound);  
+                mediaPlayer.play();
     }
     
     // below are motion methods
     public void moveUp(boolean released){
-      if(released){
+      if(released || frozenState){
             setSpeedY(0);
             //direction = 0;
-        }else{
+        }else   if(!frozenState){{
             direction = 0;
-            setSpeedY(-5);
+            setSpeedY(-1*tank_speed);
             setSpeedX(0);
             setImg(0);// up img
+          }
         }    
     }
     
     public void moveDown(boolean released){
-        if(released){
+        if(released || frozenState) {
             setSpeedY(0);
            // direction = 1;
-        }else{
-            setMovingNew(true);
+        }else  if(!frozenState){
             direction = 1;
-            setSpeedY(5);
+            setSpeedY(1*tank_speed);
             setSpeedX(0);            
             setImg(1);
-        }
+            }
     }
     
     public void moveLeft(boolean released){
-        if(released){
+        if(released || frozenState){
             setSpeedX(0);
            // direction = 2;
-        }else{
-            direction = 2;
-            setSpeedX(-5);
-            setSpeedY(0);
-            setImg(2); // left img
-        }
+        }else if(!frozenState){
+                direction = 2;
+                setSpeedX(-1*tank_speed);
+                setSpeedY(0);
+                setImg(2); // left img
+            }
     }
     
-    public void moveRight(boolean released){
-        if(released){
+    public void moveRight(boolean released){        
+        if(released || frozenState){
             setSpeedX(0);
            // direction = 3;
-        }else{
+        }else if(!frozenState){
             direction = 3;
-            setSpeedX(5);
+            setSpeedX(1*tank_speed);
             setSpeedY(0);
             setImg(3); // left img
         }
     }
     
-}
-    
-    
-    
-    
-    
-    
-    
+    public void moveInDirection(int dir, boolean moveOrStop){
+        if(dir==0)
+            moveUp(moveOrStop);
+        if(dir==1)
+            moveDown(moveOrStop);
+        if(dir==2)
+            moveLeft(moveOrStop);
+        if(dir==3)
+            moveRight(moveOrStop);
+    }
 
+}
