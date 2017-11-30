@@ -57,23 +57,29 @@ public class PlayerTank extends Tank {
     }
     
     public void shootMetal(GameEngine engine){
-        int speed=0, range=0;       
-        if(hasSuperBullet){ speed = 10; range = 700;}
-        if(!hasSuperBullet){ speed = 5; range = 500;}    
-        Bullet bullet = new MetalBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, range, speed);
-        engine.getAllObjectsList().add(bullet);
-        engine.getBulletList().add(bullet);
-        myBullet = bullet;
-        feuer(engine);
-    }
-    public void shootIce(GameEngine engine){
-        Bullet bullet= null;
-        if(hasIceBullet()){
-            bullet = new IceBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
+        if(myBullet != null) return;
+        if(!getFrozenState()){
+            int speed = 0, range = 0;       
+            if(hasSuperBullet){ speed = 10; range = 700;}
+            if(!hasSuperBullet){ speed = 5; range = 500;}    
+            Bullet bullet = new MetalBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, range, speed);
             engine.getAllObjectsList().add(bullet);
             engine.getBulletList().add(bullet);
             myBullet = bullet;
-            feuer(engine); // boom
+            feuer(engine);
+        }
+    }
+    public void shootIce(GameEngine engine){
+        if(myBullet != null) return;
+        if(!getFrozenState()){
+            Bullet bullet= null;
+            if(hasIceBullet()){
+                bullet = new IceBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
+                engine.getAllObjectsList().add(bullet);
+                engine.getBulletList().add(bullet);
+                myBullet = bullet;
+                feuer(engine); // boom
+            }
         }
     }
     
@@ -102,6 +108,20 @@ public class PlayerTank extends Tank {
         life_1.add(new Image(Panzer2017.class.getResource("images/user_tank_down_1life.png").toExternalForm(),38,38,false,false));
         life_1.add(new Image(Panzer2017.class.getResource("images/user_tank_left_1life.png").toExternalForm(),38,38,false,false));
         life_1.add(new Image(Panzer2017.class.getResource("images/user_tank_right_1life.png").toExternalForm(),38,38,false,false));
+    }
+    
+    public ArrayList<Image> getCurrentPlayerIcon(){
+        if(getLife() == 5){
+            return life_5;
+        }else if (getLife() == 4){
+            return  life_4;
+        }else if (getLife() == 3){
+            return  life_3;
+        }else if (getLife() == 2){
+            return life_2;
+        }else {
+            return life_1;
+        }
     }
     
     public ArrayList<Image> get5LifeIconImages() {

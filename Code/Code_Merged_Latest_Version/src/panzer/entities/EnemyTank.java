@@ -18,15 +18,16 @@ import panzer.pkg2017.Panzer2017;
  **/
 public class EnemyTank extends Tank {
     
-    private boolean frozenState;
+ 
     private ArrayList<Image> life_enemy = new ArrayList<>();  
-    private int bulletType;
     
-    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life) {
+    public EnemyTank(boolean _isAlive, float _coordinateX, float _coordinateY, int width, int height, int life, int speed_of_tank, boolean ice_shooter) {
         super(_isAlive, _coordinateX, _coordinateY, width, height, life);
         setEnemyIcons();
         setIconArrayList(life_enemy);
         setCustomImg(life_enemy.get(0));
+        setTank_speed(speed_of_tank);
+        iceBullet = ice_shooter ;
     }
     
     // detects if the player's castle is near to this enemy tank
@@ -46,25 +47,29 @@ public class EnemyTank extends Tank {
         return false;   
     }
     
-    // sets the state of this enemy tank to frozen/ melted
-    public void setTankFrozenState(boolean  value){
-        frozenState = value;
-    }
+ 
     
-    //returns frozen state
-    public boolean isFrozenState() {
-        return frozenState;
-    }
      private void setEnemyIcons(){
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_up.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_down.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_left.png").toExternalForm(),38,38,false,false));
         life_enemy.add(new Image(Panzer2017.class.getResource("images/enemy1_right.png").toExternalForm(),38,38,false,false));
-             
-         
-     }
+    }
+    
+    public ArrayList<Image> getEnemyImages() {
+        return life_enemy;
+    }
+      
+    public void shootMetalOrIce(GameEngine engine){
+        if (iceBullet){
+            shootEnemyIce(engine);
+        }else {
+            shootEnemyMetal(engine);
+        }
+    }
     
     public void shootEnemyMetal(GameEngine engine){
+        if(myBullet != null) return;
         Bullet bullet = new MetalBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
         engine.getAllObjectsList().add(bullet);
         engine.getBulletList().add(bullet);
@@ -73,6 +78,7 @@ public class EnemyTank extends Tank {
     }
     
     public void shootEnemyIce(GameEngine engine){
+        if(myBullet != null) return;
         Bullet bullet= null;
         if(hasIceBullet()){
             bullet = new IceBullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500, 5);
