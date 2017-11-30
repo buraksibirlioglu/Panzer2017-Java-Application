@@ -36,6 +36,7 @@ import panzer.entities.Bonus;
 import panzer.entities.Brick;
 import panzer.entities.Bullet;
 import panzer.entities.Castle;
+import panzer.entities.CoinsBonus;
 import panzer.entities.EnemyCastle;
 import panzer.entities.EnemyFreezeBonus;
 import panzer.entities.PlayerTank;
@@ -153,8 +154,7 @@ public class GameEngine {
         temp.add(new EnemyFreezeBonus(true, 550,250,38,38 ));
         temp.add(new EnemyFreezeBonus(true, 600,250,38,38 ));
         temp.add(new SpeedBonus(true, 200,250,38,38 ));
-        temp.add(new FullHealthBonus(true, 500,500,38,38 ));
-        
+        temp.add(new FullHealthBonus(true, 500,500,38,38 ));        
         temp.add(new SpeedBonus(true, 500,350,38,38 ));
         temp.add(new EnemyFreezeBonus(true, 550,300,38,38 ));
         temp.add(new ProtectionBonus(true, 400,250,38,38 ));
@@ -720,14 +720,17 @@ public class GameEngine {
                         changeRoute((EnemyTank)obj2);
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
-                        //if(obj2 instanceof GrassTile) continue;
-                        
-                        obj2.setAlive(false);
+                        Brick a=(Brick)obj2;
+                         a.setLife(a.getLife()-1);
+                         
+                         if(a.getLife()==0){
+                            System.out.println(a.getLife());
+                            allObjectsList.remove(j);
+                            obj2.setAlive(false);}
                         obj1.setAlive(false);
-                         Bullet b = (Bullet)obj1;
-                         b.setSpeedX(0);
-                         b.setSpeedY(0);
-                        allObjectsList.remove(j);
+                        Bullet b = (Bullet)obj1;
+                        b.setSpeedX(0);
+                        b.setSpeedY(0);
                         MediaPlayer mediaPlayer;
                         Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
                         mediaPlayer = new MediaPlayer(sound);  
@@ -757,11 +760,16 @@ public class GameEngine {
                                 b.setSpeedY(0);
                                 System.out.println("shotttt Enemy");                       
                                 EnemyTank t = (EnemyTank)obj2;
-                                   allObjectsList.remove(i);
+                                allObjectsList.remove(i);
                                 if(t.getLife() >=1){
+                                    
                                     System.out.println("LIFE = "+ t.getLife());
                                     t.setLife(t.getLife()-1);// decrement life
+                                  
                                     if (t.getLife() == 0){
+                                        double posX = t.getCoordinateX();
+                                        double posY = t.getCoordinateY();
+                                        int enemyType= t.getEnemyType();
                                         t.setAlive(false);
                                         allObjectsList.get(j).setAlive(false);
                                         allObjectsList.remove(j);
@@ -770,6 +778,9 @@ public class GameEngine {
                                                 enemyTankList.remove(m);
                                             }
                                         }
+                                        Bonus coin = new  CoinsBonus(true, posX, posY, 38, 38, enemyType);                                        
+                                        allObjectsList.add(coin);
+                                        
                                     }
                                 }
                                
@@ -941,8 +952,12 @@ public class GameEngine {
                                 thisBonus.setDuration(-1);
                                 getPlayerTank().incrementMyBonusDuration();
                                 thisBonus.setBrute_destroy(true);
-                                getPlayerTank().setHasSuperBullet(true);
-                                
+                                getPlayerTank().setHasSuperBullet(true);                                
+                            }else if (thisBonus instanceof  CoinsBonus){
+                                thisBonus.setDuration(-1);
+                                thisBonus.setBrute_destroy(true);
+                               
+                                points += ((CoinsBonus) thisBonus).getBonusPoints();
                             }                            
                         }                    
                     }
