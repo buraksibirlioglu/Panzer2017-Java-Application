@@ -6,6 +6,8 @@
 package panzer.pkg2017;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
@@ -21,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -65,23 +68,38 @@ public class GamePanel extends Scene{
                 app_stage.show();
             }
         });
+        
         VBox gameBox = new VBox();
-      
-        GameEngine engine = new GameEngine(); // initialize all default objects      
-   
         gameBox.setBorder(new Border(new BorderStroke(Color.RED,  BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2, 2, 2, 2, false, false, false, false))));
         Canvas canvas = new Canvas(1000,650);
         gameBox.getChildren().add(canvas);
+
+        GameEngine engine = new GameEngine(); // initialize all default objects      
+        engine.setUsername(promptUserName());
         GraphicsContext g = canvas.getGraphicsContext2D();
-        engine.initializeLevel1();
-        g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());       
-       
+        engine.initializeLevel1(false);
+        g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());  
+        engine.timer.setGraphics(g);
+        engine.timer.start();
         this.setOnKeyPressed(engine.new HandleKeyPressed());
         this.setOnKeyReleased(engine.new HandleKeyReleased());
-        engine.timer.setGraphics(g);
-        System.out.println(System.nanoTime());
-        engine.timer.start();
         root.getChildren().add(gameBox);
+    }
+    
+    private String promptUserName(){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("USER NAME PROMPT");
+        dialog.setHeaderText("Want to smash some enemies");
+        dialog.setContentText("Enter a nickname first:");
+
+        // Traditional way to get the response value.
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+           return result.get();
+        }else{
+            return "randomUser" + new Random().nextInt(122222) + 1;
+        } 
+        
     }
 }
 
