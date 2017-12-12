@@ -43,6 +43,7 @@ import panzer.entities.PlayerTank;
 import panzer.entities.Tank;
 import panzer.entities.EnemyTank;
 import panzer.entities.FastBulletBonus;
+import panzer.entities.FileManager;
 import panzer.entities.FullHealthBonus;
 import panzer.entities.GameObject;
 import panzer.entities.IceBullet;
@@ -59,30 +60,43 @@ import panzer.pkg2017.Panzer2017;
  * @author Ndricim Rrapi
  */
 public class GameEngine {
+
+    int level;    
     PlayerTank playerTank;
-    EnemyTank enemyTank;
-    ArrayList<EnemyTank> enemyTankList;
-    public MyAnimationTimer timer;
+    private String username;
+    public boolean soundOnOrOff;
+    ArrayList<EnemyTank> enemyTankList;   
     ArrayList<Bonus> bonusList;
-    ArrayList<GameObject> allObjectsList ;
     ArrayList<Castle> castleList;
-    Map map;
-    Image imageEnemyCastle, imagePlayerCastle;
     ArrayList<Bullet> bulletList;
+    ArrayList<GameObject> allObjectsList ; 
+    Map map;
+    Image imageEnemyCastle, imagePlayerCastle;    
     int points;
     boolean drawBottomBar = true;
     static boolean exit = false;
-    Canvas canvas;
-    int level;
-    boolean win=false;
-    boolean loss=false;
-            
+    Canvas canvas;    
+    boolean win = false;
+    FileManager fileManager;
+    public MyAnimationTimer timer;
+    private final String ENEMY_COLLIDE_PLAYER = "sound/buzz_effect.mp3";
+    private final String BULLET_COLLIDE_BRICK = "sound/destroy_brick.mp3";
+    private final String BULLET_COLLIDE_ENEMY = "sound/enemy_shot.mp3";
+    private final String BULLET_COLLIDE_PLAYER = "sound/player_shot.mp3";
+    private final String GAME_LOST = "sound/game_lost.mp3";
+    private final String SOUND_ON_IMG = "images/sound_on.png";
+    private final String SOUND_OFF_IMG = "images/sound_off.png";  
    // Constructor   
-    public GameEngine() throws IOException{
-        allObjectsList = new ArrayList<>();
-        timer = new MyAnimationTimer();
+    public GameEngine() throws IOException{      
+        fileManager= new FileManager();   
+        soundOnOrOff = fileManager.getSettings()[0] == 1; // 1 means sound is on, else sound will be false
         level = 1;
         exit = false;
+        timer = new MyAnimationTimer();
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
     }
     
     public ArrayList<Bullet> getBulletList() {
@@ -91,6 +105,8 @@ public class GameEngine {
     
     // populate with objects
     public void initializeLevel1(boolean restartLevel){    
+       
+        allObjectsList = new ArrayList<>();
         try {        
             if(restartLevel){
                 allObjectsList = new ArrayList<>();
@@ -122,6 +138,7 @@ public class GameEngine {
             allObjectsList.add(enemyTankList.get(i));
         }
         createBonusList();
+        timer.start();
     }
     
     // creates both enemy-friendly castles
@@ -132,12 +149,7 @@ public class GameEngine {
         return castle;
     }
     
-    // returns all of the objects currently on the game
-    public ArrayList<GameObject> getAllObjectsList() {
-        return allObjectsList;
-    }
-    
-    // createas a list of bonuses
+     // createas a list of bonuses
     private ArrayList<Bonus> createBonusList(){
         ArrayList<Bonus> temp = new ArrayList<>();
         temp.add(new EnemyFreezeBonus(true, 100,100,38,38 ));
@@ -163,11 +175,6 @@ public class GameEngine {
         return temp;
     }
     
-       
-    public ArrayList<Bonus> getBonusList() {
-        return bonusList;
-    }
-    
     // assigning initial location of enemy tanks
     private ArrayList<EnemyTank> createEnemyTankArrayList(){
         ArrayList<EnemyTank> enemies = new ArrayList<>();
@@ -184,16 +191,21 @@ public class GameEngine {
         EnemyTank temp = new EnemyTank(true, x, y,38, 38,lifepoints,speed_of_tank,enemyType);   
         return temp;
     }
-        
+    // returns all of the objects currently on the game
+  
+    public ArrayList<GameObject> getAllObjectsList() {
+        return allObjectsList;
+    }
+       
+    public ArrayList<Bonus> getBonusList() {
+        return bonusList;
+    }
+            
     public PlayerTank getPlayerTank() {
         return playerTank;
     }
     
-    public EnemyTank getEnemyTank(int n) {
-        return enemyTankList.get(n);
-    }
-    
-    // sets the image to the health bar of the enemy king
+     // sets the image to the health bar of the enemy king
     public void setHealthBarEnemyCastle(Image img){
         imageEnemyCastle = img;
     }
@@ -270,12 +282,11 @@ public class GameEngine {
                     pause_stage.show();
                     pause_stage.setOnHidden(t -> {
                         try {
-                            pauseMenu();
+                            showPauseMenu();
                         } catch (IOException ex) {
                               ex.printStackTrace();
                         }
                     });
-
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }                
@@ -284,7 +295,7 @@ public class GameEngine {
         }
     }
   
-    public void pauseMenu() throws IOException{
+    public void showPauseMenu() throws IOException {
         System.out.println(exit);
         if(exit==false){
             System.out.println("menu1");
@@ -302,14 +313,11 @@ public class GameEngine {
     // The timer which runs the code on a certain framerate to offer smooth gameplay 
     public class MyAnimationTimer extends AnimationTimer{
         Canvas thisCanvas;
-        final int updateTime = 8; // in ms
-        boolean right = false;
-        int bonusCount = 100;
         GraphicsContext gc ;
         int time;
         long oldNanoTime = System.nanoTime();  
         long oldNanoTime1 = System.nanoTime(); 
-        long previosTime = 0;   
+        long enemyNanoTime = 0;   
         long previosTime1 = 0;
         long previosTimeBonus = 0;
         
@@ -317,8 +325,9 @@ public class GameEngine {
         @Override
         public void handle(long now) {
             //moveEnemy(0 ); moves enemy over the map 
+            
             gc.clearRect(0, 0, 1000, 600);// clear field map
-         
+           
             gc.clearRect(390, 0, 104, 650); 
             gc.clearRect(555,600,100,300);
    
@@ -339,15 +348,15 @@ public class GameEngine {
                   keepEnemyTankWithinBounds(enemyTankList.get(i));
             
             
-            previosTime      += System.nanoTime() - oldNanoTime;
+            enemyNanoTime      += System.nanoTime() - oldNanoTime;
             previosTimeBonus += System.nanoTime() - oldNanoTime;
             oldNanoTime = System.nanoTime(); // update old nano time
-            if(previosTime / 1000000.0 > 2000){ 
+            if(enemyNanoTime / 1000000.0 > 2000){ 
                 for (int i = 0; i < enemyTankList.size();i++) {  
                     if(!playerOnSight(enemyTankList.get(i)))
-                        changeRoute(enemyTankList.get(i));//  
+                        findARoute(enemyTankList.get(i));//  
                 }
-                previosTime = 0;
+                enemyNanoTime = 0;
               
                 //random enemy bullet shot 
                 int random = getRandom();
@@ -470,6 +479,7 @@ public class GameEngine {
                         }
 		}
             
+           
             g.setFill(Color.WHITE);
             g.setFont(Font.font("Verdana", FontWeight.LIGHT, 25));
             g.fillText("Points :   " , 345, 635);
@@ -477,7 +487,14 @@ public class GameEngine {
             g.setStroke(Color.RED);
             g.setLineWidth(1);
             g.strokeLine(0, 601, 1000, 601);
-           
+            
+            if(soundOnOrOff)
+                g.drawImage(new Image(Panzer2017.class.getResource(SOUND_ON_IMG).toExternalForm(),30,30,false,false), 5, 5);     
+            if(!soundOnOrOff)
+                g.drawImage(new Image(Panzer2017.class.getResource(SOUND_OFF_IMG).toExternalForm(),30,30,false,false), 5, 5);
+                
+            
+            
             if(getPlayerTank().getMyBonusDuration() > 0){
                 if( getPlayerTank().getTank_speed() > 1 && drawKings ){ // he is moving fast
                     g.drawImage(new Image(Panzer2017.class.getResource("images/power_speed.png").toExternalForm(),40,40,false,false), 500, 605);
@@ -563,7 +580,7 @@ public class GameEngine {
     }
     
     // changes enemy tank's route when evoked - randomly decide a 
-    public void changeRoute(EnemyTank enemyTank){
+    public void findARoute(EnemyTank enemyTank){
         if(!enemyTank.getFrozenState()){
             Random rand = new Random();
             int  n = rand.nextInt(1500) + 1;
@@ -582,7 +599,6 @@ public class GameEngine {
                     enemyTank.moveLeft(false);
                     return;
                 }
-
             }
             else if(n > 200  && n <= 400){
                 if(enemyTank.getDirection()==0){//up
@@ -665,16 +681,16 @@ public class GameEngine {
                         if( obj1.getCoordinateX()-obj2.getCoordinateX() <=-38){
                            obj1.setCoordinateX(obj1.getCoordinateX()-1);
                         }
-                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >=40){
+                        if( obj1.getCoordinateX()-obj2.getCoordinateX() >=38){
                            obj1.setCoordinateX(obj1.getCoordinateX()+1);
                         }
                         if( obj1.getCoordinateY()-obj2.getCoordinateY() <=-38){
                            obj1.setCoordinateY(obj1.getCoordinateY()-1);
                         }
-                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=40){
+                        if( obj1.getCoordinateY()-obj2.getCoordinateY() >=38){
                            obj1.setCoordinateY(obj1.getCoordinateY()+1);
                         }
-                        changeRoute((EnemyTank)obj1);
+                        findARoute((EnemyTank)obj1);
                     }
                     if(obj1 instanceof EnemyTank && obj2 instanceof PlayerTank){   
                         if( obj1.getCoordinateX()-obj2.getCoordinateX() >= 38){
@@ -693,11 +709,8 @@ public class GameEngine {
                             obj1.setCoordinateY(obj1.getCoordinateY()+1);
                             obj2.setCoordinateY(obj2.getCoordinateY()-1);
                         }
-                         MediaPlayer mediaPlayer;
-                        Media sound = new Media(MainMenuController.class.getResource("sound/buzz_effect.mp3").toExternalForm());
-                        mediaPlayer = new MediaPlayer(sound);  
-                        mediaPlayer.play();
-                        changeRoute((EnemyTank)obj1);
+                        playSound(ENEMY_COLLIDE_PLAYER);
+                        findARoute((EnemyTank)obj1);
                     }
                     if(obj1 instanceof EnemyTank && obj2 instanceof EnemyTank){   
                         if( obj1.getCoordinateX()-obj2.getCoordinateX() >= 38){
@@ -716,8 +729,8 @@ public class GameEngine {
                             obj1.setCoordinateY(obj1.getCoordinateY()+5);
                             obj2.setCoordinateY(obj2.getCoordinateY()-5);
                         }
-                        changeRoute((EnemyTank)obj1);
-                        changeRoute((EnemyTank)obj2);
+                        findARoute((EnemyTank)obj1);
+                        findARoute((EnemyTank)obj2);
                     }
                     if(obj1 instanceof Bullet && obj2 instanceof Brick){
                         Brick a=(Brick)obj2;
@@ -731,10 +744,7 @@ public class GameEngine {
                         Bullet b = (Bullet)obj1;
                         b.setSpeedX(0);
                         b.setSpeedY(0);
-                        MediaPlayer mediaPlayer;
-                        Media sound = new Media(MainMenuController.class.getResource("sound/destroy_brick.mp3").toExternalForm());
-                        mediaPlayer = new MediaPlayer(sound);  
-                        mediaPlayer.play();
+                        playSound(ENEMY_COLLIDE_PLAYER);
                         if(b.getBulletOwner()== getPlayerTank())
                             points++;
                     }
@@ -750,10 +760,7 @@ public class GameEngine {
                                 t.setFrozenState(true);
                                 t.incrementFrozenStateDuration();
                                 t.setCustomImg(new Image(Panzer2017.class.getResource("images/enemy1_frozen.png").toExternalForm(),38,38,false,false));
-                                MediaPlayer mediaPlayer;
-                                Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
-                                mediaPlayer = new MediaPlayer(sound);  
-                                mediaPlayer.play();
+                                playSound(BULLET_COLLIDE_ENEMY);
                             }else if (b instanceof MetalBullet){
                                 obj1.setAlive(false);
                                 b.setSpeedX(0);
@@ -761,8 +768,7 @@ public class GameEngine {
                                 System.out.println("shotttt Enemy");                       
                                 EnemyTank t = (EnemyTank)obj2;
                                 allObjectsList.remove(i);
-                                if(t.getLife() >=1){
-                                    
+                                if(t.getLife() >=1){                                    
                                     System.out.println("LIFE = "+ t.getLife());
                                     t.setLife(t.getLife()-1);// decrement life
                                   
@@ -783,11 +789,7 @@ public class GameEngine {
                                         
                                     }
                                 }
-                               
-                                MediaPlayer mediaPlayer;
-                                Media sound = new Media(MainMenuController.class.getResource("sound/enemy_shot.mp3").toExternalForm());
-                                mediaPlayer = new MediaPlayer(sound);  
-                                mediaPlayer.play();
+                                playSound(BULLET_COLLIDE_ENEMY);
                                 points+=50;
                             }
                         }
@@ -814,35 +816,30 @@ public class GameEngine {
                                     PlayerTank t = (PlayerTank)obj2;
                                     t.setLife(t.getLife()-1);
                                     System.err.println("Shot by enemy");
-                                    MediaPlayer mediaPlayer;
-                                    Media sound = new Media(MainMenuController.class.getResource("sound/player_shot.mp3").toExternalForm());
-                                    mediaPlayer = new MediaPlayer(sound);  
                                     if(t.getLife()==4){
                                         t.setIcon(t.get4LifeIconImages());
                                         t.setCustomImg(t.get4LifeIconImages().get(t.getDirection()));
-                                        mediaPlayer.play();
+                                        playSound(BULLET_COLLIDE_PLAYER);
                                     } 
                                     if(t.getLife()==3){
                                         t.setIcon(t.get3LifeIconImages());
                                         t.setCustomImg(t.get3LifeIconImages().get(t.getDirection()));
-                                        mediaPlayer.play();
+                                        playSound(BULLET_COLLIDE_PLAYER);
                                     }                          
                                     if(t.getLife()==2){
                                         t.setIcon(t.get2LifeIconImages());
                                         t.setCustomImg(t.get2LifeIconImages().get(t.getDirection()));
-                                        mediaPlayer.play();
+                                        playSound(BULLET_COLLIDE_PLAYER);
                                     }if(t.getLife()==1){
                                         t.setIcon(t.get1LifeIconImages());
                                         t.setCustomImg(t.get1LifeIconImages().get(t.getDirection()));
-                                        mediaPlayer.play();
+                                        playSound(BULLET_COLLIDE_PLAYER);
                                     } 
                                     if(t.getLife()==0){
                                         allObjectsList.remove(j);
                                         t.setAlive(false);
                                         System.err.println("Shot by enemy and DIED!!");
-                                        Media sound2 = new Media(MainMenuController.class.getResource("sound/game_lost.mp3").toExternalForm());
-                                        mediaPlayer = new MediaPlayer(sound2);  
-                                        mediaPlayer.play();
+                                        playSound(GAME_LOST);
                                         timer.stop();
                                         showDialog( false, level);      
                                     } 
@@ -886,11 +883,6 @@ public class GameEngine {
                     }if(obj1 instanceof Bullet && obj2 instanceof PlayerCastle){
                         if (obj1.isAlive()){
                             Bullet temp = (Bullet) obj1;
-//                            if(temp.getBulletOwner()== getPlayerTank()){
-//                                //showDialog("Warning", "Ignorant shot", "DON'T SHOOT YOUR OWN KING!!!");
-//                                System.out.println("YOU TRAITOR !!!");
-//                            }
-//                            else{
                                 PlayerCastle temp2 = ((PlayerCastle)obj2);
                                 System.out.println("======"+temp2.getLife());
                                 temp2.setLife(temp2.getLife()-10);
@@ -1075,7 +1067,8 @@ public class GameEngine {
         alert.setTitle("Information");
         
         if(!win){
-            showTheBoxInformation( alert, "Restart Game", gameLostHeader, gameLostContent,  false,  level);
+            fileManager.writeScore(username, points);
+            showTheBoxInformation( alert, "Restart Game", gameLostHeader, gameLostContent,  false,  level);            
         }if (win){
             if(level == 2){
                 showTheBoxInformation( alert, "Next Level",  "LEVEL " + 1 + " CLEARED" , levelClearedContent,  won,  level);
@@ -1084,7 +1077,8 @@ public class GameEngine {
                 showTheBoxInformation( alert, "Next Level",  "LEVEL " + 2 + " CLEARED", levelClearedContent,  won,  level);
             }
             else{
-                showTheBoxInformation( alert, "Restart Game", gameClearedHeader, gameClearedContent,  won,  level);
+                fileManager.writeScore(username, points);
+                showTheBoxInformation( alert, "Restart Game", gameClearedHeader, gameClearedContent,  won,  level);                
             }
         }
     }  
@@ -1119,12 +1113,21 @@ public class GameEngine {
                     ex.printStackTrace();
                 }
                 Scene nnew=new Scene(root);                    
-                Stage pause_stage=new Stage();
-                pause_stage.setScene(nnew);
-                pause_stage.show();
+                Stage newStage = new Stage();
+                newStage.setScene(nnew);
+                newStage.show();
           }
     }
   
+    public void playSound(String soundFileName){
+        if (soundOnOrOff){
+            MediaPlayer mediaPlayer;
+            Media sound = new Media(MainMenuController.class.getResource(soundFileName).toExternalForm());
+            mediaPlayer = new MediaPlayer(sound);  
+            mediaPlayer.play();
+        }
+    }
+    
     public void on_continue_pressed(ActionEvent e){
        Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
        app_stage.hide();

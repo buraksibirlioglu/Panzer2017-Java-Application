@@ -4,20 +4,13 @@
  * and open the template in the editor.
  */
 package panzer.entities;
-
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,9 +23,6 @@ public class FileManager {
     public FileManager(){
        allData = getAllData();
     }
-    
-    
-    
     public void writeSettings(int sound, int playerColor){      
         allData.set(0, sound +"_"+playerColor);
         //writer.print("");
@@ -54,14 +44,22 @@ public class FileManager {
     
     // returns settings as a array of integers size 2, int[0] -> soundOnOff, int[1] -> playerColor
     public int [] getSettings(){        
-        int[] temp = { Integer.parseInt(getAllData().get(0).substring(0, 1)), Integer.parseInt(getAllData().get(0).substring(1)) };
+        int[] temp = { Integer.parseInt(getAllData().get(0).substring(0, 1)), Integer.parseInt(getAllData().get(0).substring(2)) };
         return temp;//first line contains settings information
     }
     
     public ArrayList<String> getHighScores(){
         ArrayList<String> temp = allData;       
+        ArrayList<String> temp2 = new ArrayList<>();       
         temp.remove(0); // we need all except settings, line 2-7 represent player name + score
-        return temp;
+        for (int i = 0; i < temp.size(); i++){
+            String fullData = temp.get(i);// last element of the list contains lowest score
+            String name_ = fullData.substring(0,fullData.indexOf("_"));
+            String points = fullData.replace(name_+"_", ""); // john_123 becoms "123"
+            temp2.add(name_+"\t"+points +"\n");
+            System.out.println(name_+  "   "+points );
+        }        
+        return temp2;
     }
     
     // returns the lowest score from the highscores list or 0 if there is no score 
@@ -126,7 +124,7 @@ public class FileManager {
     
     // returns an arraylist of elements , each element represnt a row, first row = settings {"01"}, other rows = highscore = {john_12540}
     private ArrayList<String> getAllData(){
-        ArrayList<String> temp = new ArrayList<>();
+         ArrayList<String> temp = new ArrayList<>();
         BufferedReader br = null;
         System.out.println("my size = " +temp.size());
         try {
