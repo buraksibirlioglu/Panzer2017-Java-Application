@@ -43,7 +43,6 @@ import panzer.entities.PlayerTank;
 import panzer.entities.Tank;
 import panzer.entities.EnemyTank;
 import panzer.entities.FastBulletBonus;
-import panzer.entities.FileManager;
 import panzer.entities.FullHealthBonus;
 import panzer.entities.GameObject;
 import panzer.entities.IceBullet;
@@ -54,6 +53,7 @@ import panzer.entities.ProtectionBonus;
 import panzer.entities.SpeedBonus;
 import panzer.pkg2017.MainMenuController;
 import panzer.pkg2017.Panzer2017;
+import panzer.pkg2017.PauseMenu;
 
 /**
  *
@@ -76,8 +76,8 @@ public class GameEngine {
     boolean drawBottomBar = true;
     static boolean exit = false;
     Canvas canvas;    
+    static FileManager fileManager;
     boolean win = false;
-    FileManager fileManager;
     public MyAnimationTimer timer;
     private final String ENEMY_COLLIDE_PLAYER = "sound/buzz_effect.mp3";
     private final String BULLET_COLLIDE_BRICK = "sound/destroy_brick.mp3";
@@ -86,9 +86,10 @@ public class GameEngine {
     private final String GAME_LOST = "sound/game_lost.mp3";
     private final String SOUND_ON_IMG = "images/sound_on.png";
     private final String SOUND_OFF_IMG = "images/sound_off.png";  
+   
    // Constructor   
     public GameEngine() throws IOException{      
-        fileManager= new FileManager();   
+        fileManager= new FileManager(); //makes sure file exists
         soundOnOrOff = fileManager.getSettings()[0] == 1; // 1 means sound is on, else sound will be false
         level = 1;
         exit = false;
@@ -171,7 +172,6 @@ public class GameEngine {
         temp.add(new EnemyFreezeBonus(true, 550,300,38,38 ));
         temp.add(new ProtectionBonus(true, 400,250,38,38 ));
         temp.add(new FastBulletBonus(true, 300,250,38,38 ));
-        temp.add(new FullHealthBonus(true, 250,250,38,38 ));
         return temp;
     }
     
@@ -181,9 +181,9 @@ public class GameEngine {
         enemies.add(createSingleEnemyTank(820,250,1,1,1));//type 1 = normal tanks
         enemies.add(createSingleEnemyTank(800,350,1,3,2));//type 2 = fast tanks
         enemies.add(createSingleEnemyTank(850,400,5,1,3));//type 3 = life points = 5
-        enemies.add(createSingleEnemyTank(800,150,1,1,4));//
-        enemies.add(createSingleEnemyTank(810,50, 1,1,4));
-        enemies.add(createSingleEnemyTank(850,450,1,1,4));
+        enemies.add(createSingleEnemyTank(800,150,1,1,2));//
+        enemies.add(createSingleEnemyTank(810,50, 1,1,2));
+        enemies.add(createSingleEnemyTank(850,450,1,1,2));
         return enemies;
     }
     
@@ -274,12 +274,19 @@ public class GameEngine {
            case P:
                     timer.stop();
                 try {
-                    Parent root = FXMLLoader.load(Panzer2017.class.getResource("PauseMenu.fxml"));
-                    Scene nnew=new Scene(root);                    
+                    FXMLLoader loader = new FXMLLoader(Panzer2017.class.getResource("PauseMenu.fxml"));
+                    
+                    Parent root = loader.load();
+                    
+                    PauseMenu pauseMenu = loader.<PauseMenu>getController();
+
+                    pauseMenu.setEngine(returnThis());
+                    Scene nnew=new Scene(root);                          
                     Stage pause_stage=new Stage();
                     pause_stage.setTitle("Pause Menu");
                     pause_stage.setScene(nnew);
                     pause_stage.show();
+                    
                     pause_stage.setOnHidden(t -> {
                         try {
                             showPauseMenu();
@@ -744,7 +751,7 @@ public class GameEngine {
                         Bullet b = (Bullet)obj1;
                         b.setSpeedX(0);
                         b.setSpeedY(0);
-                        playSound(ENEMY_COLLIDE_PLAYER);
+                        playSound(BULLET_COLLIDE_BRICK);
                         if(b.getBulletOwner()== getPlayerTank())
                             points++;
                     }
@@ -841,6 +848,7 @@ public class GameEngine {
                                         System.err.println("Shot by enemy and DIED!!");
                                         playSound(GAME_LOST);
                                         timer.stop();
+                                        System.out.println("----------->"+ false);
                                         showDialog( false, level);      
                                     } 
                                 }
@@ -1051,11 +1059,11 @@ public class GameEngine {
     // it will be deleted once it touches the status bar
     public boolean bulletIsInsideMap(Bullet bullet){
         if (bullet.getCoordinateY() >= 590 ){ // 2 = limit movement beyond lower boundary y < 556
-                return false;
+            return false;
         }
         return true;
     }
-        
+
     // Shows the dialog box on game end points : clear level, win game, lose
     private void showDialog( boolean won, int level){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);        
@@ -1065,11 +1073,12 @@ public class GameEngine {
         String gameLostHeader  = "GAME OVER";
         String gameLostContent = "You failed your master shame on you! ";
         alert.setTitle("Information");
-        
-        if(!win){
+        System.out.println("=====>"+ won);
+        fileManager = new FileManager(); // this line makes sure the file exists and creates it if not
+        if(!won){
             fileManager.writeScore(username, points);
-            showTheBoxInformation( alert, "Restart Game", gameLostHeader, gameLostContent,  false,  level);            
-        }if (win){
+            showTheBoxInformation( alert, "Restart Game", gameLostHeader, gameLostContent,  false,  level);
+        }if (won){
             if(level == 2){
                 showTheBoxInformation( alert, "Next Level",  "LEVEL " + 1 + " CLEARED" , levelClearedContent,  won,  level);
             }
@@ -1077,8 +1086,9 @@ public class GameEngine {
                 showTheBoxInformation( alert, "Next Level",  "LEVEL " + 2 + " CLEARED", levelClearedContent,  won,  level);
             }
             else{
+                showTheBoxInformation( alert, "Restart Game", gameClearedHeader, gameClearedContent,  won,  level); 
+                
                 fileManager.writeScore(username, points);
-                showTheBoxInformation( alert, "Restart Game", gameClearedHeader, gameClearedContent,  won,  level);                
             }
         }
     }  
@@ -1087,7 +1097,9 @@ public class GameEngine {
     public void showTheBoxInformation(Alert alert, String btn, String header, String content, boolean won, int level){
         alert.setHeaderText(header);
         alert.setContentText(content);
-
+        System.out.println("-->" + header );
+        System.out.println("-->" + content);
+        
         if(btn.equalsIgnoreCase("Next Level")){                  
             alert.setOnHidden(evt -> setAlertOnClickAction(false,false)  ); // start next level);                    
         }
@@ -1105,7 +1117,7 @@ public class GameEngine {
             timer.start();
           }
           else{
-                canvas.getScene().getWindow().hide();
+                canvas.getScene().getWindow().hide(); 
                 Parent root= null;
                 try {
                     root = FXMLLoader.load(Panzer2017.class.getResource("MainMenu.fxml"));
@@ -1114,7 +1126,7 @@ public class GameEngine {
                 }
                 Scene nnew=new Scene(root);                    
                 Stage newStage = new Stage();
-                newStage.setScene(nnew);
+                newStage.setScene(nnew); 
                 newStage.show();
           }
     }
@@ -1128,16 +1140,11 @@ public class GameEngine {
         }
     }
     
-    public void on_continue_pressed(ActionEvent e){
-       Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-       app_stage.hide();
-     
-   }
-
-    public void on_exit_pressed(ActionEvent e){       
-       Stage app_stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-       exit=true;
-       app_stage.hide();
-       System.out.println("presed exit");
-   }
+    public GameEngine returnThis(){
+        return this;
+    }
+    
+    public void setExit( boolean value){
+        exit = value;
+    }
 }

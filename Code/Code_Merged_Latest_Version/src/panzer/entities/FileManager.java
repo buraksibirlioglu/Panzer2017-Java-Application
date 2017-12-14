@@ -5,6 +5,7 @@
  */
 package panzer.brainClass;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import panzer.pkg2017.Panzer2017;
 
 /**
@@ -25,6 +28,55 @@ public class FileManager {
     static ArrayList<String> allData;
     
     public FileManager(){
+        // It has to make sure that saved text file exists when it needs to be used
+        // If folder does not exist , create the folder and the file within it
+        // If folder exists but text file does not, than create the file
+        File directory = new File("C:\\ProgramData\\Panzer2017");
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                System.out.println("Multiple directories are created!");
+                FileWriter writer;
+                try {
+                    writer = new FileWriter("C:/ProgramData/Panzer2017/saved_data.txt",false);
+                    PrintWriter printer = new PrintWriter(writer);      
+                    printer.printf  ("%s"+ "%n", "1_1");
+                    printer.printf  ("%s"+ "%n", "THE BEST_1200");
+                    printer.printf  ("%s"+ "%n", "BEAT_100");
+                    printer.printf  ("%s"+ "%n", "CAN YOU_15");
+                    printer.close();
+                    writer.close();
+                }catch(IOException ex){
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("ERROR Alert : 1");
+                    alert.setHeaderText("Error while trying to create new directory for saving settings");
+                    alert.setContentText("File Creation failed. Reinstall the game to resolve the issue.");
+                    alert.show();
+                }
+            } else {
+                System.out.println("Failed to create multiple directories!");
+            }
+        }else {
+             File textFile= new File("C:/ProgramData/Panzer2017/saved_data.txt");
+             if (!textFile.exists()){
+                 try {
+                    textFile.createNewFile();
+                    FileWriter writer = new FileWriter(textFile,false);
+                    PrintWriter printer = new PrintWriter(writer);      
+                    printer.printf  ("%s"+ "%n", "1_1");
+                    printer.printf  ("%s"+ "%n", "THE BEST_1200");
+                    printer.printf  ("%s"+ "%n", "BEAT_100");
+                    printer.printf  ("%s"+ "%n", "CAN YOU_15");
+                    printer.close();
+                    writer.close();
+                 } catch (IOException ex) {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("ERROR Alert : 2");
+                    alert.setHeaderText("Error while trying to create new text file for saving settings");
+                    alert.setContentText("File Creation failed. Reinstall the game to resolve the issue.");
+                    alert.show();
+                 }  
+             }
+        }
     }
   
     public void writeSettings(int sound, int playerColor){   
@@ -33,7 +85,7 @@ public class FileManager {
         allData.set(0, sound +"_"+playerColor);
         //writer.print("");
         try {
-            writer = new FileWriter("saved_data.txt", false);
+            writer = new FileWriter("C:/ProgramData/Panzer2017/saved_data.txt", false);
             writer.write(allData.get(0));
             writer.append(System.getProperty("line.separator"));  
             for(int i = 1; i < allData.size() && allData.get(i) != null; i++){
@@ -102,38 +154,38 @@ public class FileManager {
             FileWriter writer;
             System.out.println("HIGHEST SCORE REACHED"+ allData.size());
             try {
-            writer = new FileWriter("saved_data.txt", false);
-            
-            String tempOldHigh = allData.get(0);
-            ArrayList<String> temp = new ArrayList<String>(allData);
-            temp.remove(0);
-            allData.clear();
-            allData.add(tempOldHigh);
-            allData.add(playerName+"_"+points);
-            System.out.println("HIGHEST 1"+allData.size() + temp.size());
-            for(int i = 0; i < temp.size(); i++){
-                allData.add(temp.get(i)); // added to the top
-            }
-            System.out.println("HIGHEST 2");
-            PrintWriter printer = new PrintWriter(writer);
-            for (int i = 0; i < allData.size(); i++){
-                printer.printf  ("%s"+ "%n", allData.get(i));
-            }
-            System.out.println("HIGHEST 3");
-            printer.close();
-          //  writer.close
-            return 2;
+                writer = new FileWriter("C:/ProgramData/Panzer2017/saved_data.txt", false);
+
+                String tempOldHigh = allData.get(0);
+                ArrayList<String> temp = new ArrayList<String>(allData);
+                temp.remove(0);
+                allData.clear();
+                allData.add(tempOldHigh);
+                allData.add(playerName+"_"+points);
+                System.out.println("HIGHEST 1"+allData.size() + temp.size());
+                for(int i = 0; i < temp.size(); i++){
+                    allData.add(temp.get(i)); // added to the top
+                }
+                System.out.println("HIGHEST 2");
+                PrintWriter printer = new PrintWriter(writer);
+                for (int i = 0; i < allData.size(); i++){
+                    printer.printf  ("%s"+ "%n", allData.get(i));
+                }
+                System.out.println("HIGHEST 3");
+                printer.close();
+              //  writer.close
+                return 2;
             } catch (IOException ex) {
                 Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         allData= getAllData();
-        if(points > getLowestScore() && allData.size() > 6){ //stupid ??
+        if(points > getLowestScore() ){ //stupid ??
                  System.out.println("first pass");
                  FileWriter writer;
             try {
                     System.out.println("fouth pass");
-                    writer = new FileWriter("saved_data.txt", true);
+                    writer = new FileWriter("C:/ProgramData/Panzer2017/saved_data.txt", true);
                     PrintWriter printer = new PrintWriter(writer);
                     printer.printf  ("%s"+ "%n",playerName + "_" + points);
                     printer.close();
@@ -156,9 +208,7 @@ public class FileManager {
          ArrayList<String> temp = new ArrayList<>();
         BufferedReader br = null;
         try { 
-          //  br = new BufferedReader( new InputStreamReader(FileManager.class.getResourceAsStream("saved_data.txt"))); 
-        //    System.out.println("../../saved_data.txt"));
-           br = new BufferedReader( new InputStreamReader(new FileInputStream("saved_data.txt")));           
+           br = new BufferedReader( new InputStreamReader(new FileInputStream("C:/ProgramData/Panzer2017/saved_data.txt")));           
         
             String line = br.readLine();         
             while (line != null ) {
@@ -172,4 +222,5 @@ public class FileManager {
         }
         return  temp;      
     }
+    
 }
