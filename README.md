@@ -36,4 +36,4 @@ In this project we will be developing a 2D game which will be built using Java. 
 • ![Design Report](https://github.com/buraksibirlioglu/CS319_SEC2_2C/blob/master/doc/Reports/REVISED_DesignReport_Group2C.pdf)
 
 
-• ![Final Report](https://github.com/buraksibirlioglu/CS319_SEC2_2C/blob/master/Reports/Final_Report_Group2C.pdf)
+• ![Final Report](https://github.com/buraksibirlioglu/CS319_SEC2_2C/blob/master/doc/Reports/Revised_Final_Report_Group2C.pdf)
