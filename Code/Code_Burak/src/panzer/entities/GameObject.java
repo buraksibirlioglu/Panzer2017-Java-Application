@@ -120,12 +120,71 @@ public void setIcon(ArrayList<Image> icon) {
         if (this instanceof Bullet && obj instanceof Tank){
             Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
             Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , obj.getWidth() , obj.getHeight());
-             if(rectOne.intersects(rectTwo))
+            if(rectOne.intersects(rectTwo))
+               return true;
+        }
+        if (this instanceof Bonus && obj instanceof PlayerTank){
+            Rectangle rectOne = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+            Rectangle rectTwo = new Rectangle((int)(obj.getCoordinateX()) , (int)(obj.getCoordinateY()) , obj.getWidth() , obj.getHeight());
+            if(rectOne.intersects(rectTwo))
                return true;
         }
         return false;
     }
        
+    
+    /**
+     * This method predicts whether the enemy is heading towards a closed area
+     * Since EnemyTank's usually decide a new random direction/position when hitting
+     * another object they might end up merging with the object(EnemyTank or Brick)
+     * which could by coincidence be exactly at the place of the new random 
+     * position. This would cause a major glitch in the enemy behavior.In order 
+     * to avoid that this method makes a lookahead predicate and tells warns the
+     * GameEngine that this EnemyTank cannot move towards a random new position.
+     * Instead, this method will generate a new correct direction for this tank to move
+     * 
+     * @param paramObj : Could be a Brick or an EnemyTank
+     * 
+     * @return 
+     * case : {0 = up, 1 = down, 2 = left, 3 = right} If one of these 
+     * are returned they define that EnemyTank has gone to a dead end and needs to 
+     * move in this new direction in order to get out of there
+     * 
+     * case : {-1} : In this case, EnemyTank has a clear path on 4 sides, so the nor-
+     * mal random function can be applied
+     * 
+     * case : {4,5,6,7}: In this case the EnemyTank is surrounded on 4 sides. Thus 
+     * the tank should shoot and then move to get out of that difficult position
+     * The return being > 3 signifies just that. Furthermore, subtracting 4 from
+     * any of the returned values will give the direction in which the Tank
+     * needs to move after it has shot the brick
+     * 
+     * case: {8,9,10,11}: In this case the EnemyTank is about to collide with
+     * another EnemyTank. The environment receiving values in this interval
+     * will know what is happening. Subtracting 8 from these values will give
+     * the new direction in which the EnemyTank should move
+     */
+    public int collisionPredicate(GameObject paramObj){
+        // initialize variables to keep the position of the tanks 
+        double thisPosX = this.getCoordinateX()+ this.getSpeedX();
+        double thisPosY = this.getCoordinateY()+ this.getSpeedY();
+        double paramX   = paramObj.getCoordinateX() + paramObj.getSpeedX();
+        double paramY   = paramObj.getCoordinateY() + paramObj.getSpeedY();
+        
+        //scenario 1: There is some object on my (this) left, that I should know about
+        if (thisPosX - paramX <= 40){
+            
+        }
+        //scenario 2: There is some object on my (this) right, that I should know about
+        else if(thisPosX-paramX >= -40){
+            
+        }
+        //scenario 3: There is some object on my (this) right, that I should know about
+        Rectangle thisObjRect  = new Rectangle((int)(coordinateX + speedX) , (int)(coordinateY + speedY), this.getWidth(), this.getHeight());
+        Rectangle paramObjRect = new Rectangle((int)(paramObj.getCoordinateX()+ paramObj.getSpeedX()) , (int)(paramObj.getCoordinateY()+paramObj.getSpeedY()), paramObj.getWidth(), paramObj.getHeight());
+           return 1;
+    }
+    
     public boolean isMovingParent() {
         return movingParent;
     }

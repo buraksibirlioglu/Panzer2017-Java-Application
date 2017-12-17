@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="300.0" style="-fx-background-color: #f7b2a3;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.brainClass.GameEngine">
+<AnchorPane id="AnchorPane" prefHeight="263.0" prefWidth="444.0" style="-fx-background-color: #f7b2a3;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.PauseMenu">
     <children>
-      <Button layoutX="50.0" layoutY="50.0" mnemonicParsing="false" onAction="#on_continue_pressed" prefHeight="50.0" prefWidth="200.0" text="Continue" />
-      <Button layoutX="50.0" layoutY="150.0" mnemonicParsing="false" onAction="#on_exit_pressed" prefHeight="50.0" prefWidth="200.0" text="Exit"/>
+      <ImageView fitHeight="263.0" fitWidth="444.0">
+         <image>
+            <Image url="@images/pause_bg.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="play" fitHeight="112.0" fitWidth="298.0" layoutX="103.0">
+         <image>
+            <Image url="@images/pause_text_pressed.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="son_off_btn" fitHeight="103.0" fitWidth="263.0" layoutX="125.0" layoutY="74.0">
+         <image>
+            <Image url="@images/sound_at_start.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="exit " fitHeight="92.0" fitWidth="235.0" layoutX="146.0" layoutY="139.0">
+         <image>
+            <Image url="@images/exit_not_pressed.png" />
+         </image>
+      </ImageView>
    </children>   
 </AnchorPane>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="panzer.pkg2017.HighScorePanel">
+   <children>
+      <ImageView fitHeight="608.0" fitWidth="900.0">
+         <image>
+            <Image url="@images/highscores.jpg" />
+         </image>
+      </ImageView>
+      <Label fx:id="scores_label" layoutX="345.0" layoutY="108.0" prefHeight="467.0" prefWidth="383.0" text="Label" textFill="WHITE">
+         <font>
+            <Font name="Arial" size="38.0" />
+         </font>
+      </Label>
+      <Label fx:id="name_label" layoutX="45.0" layoutY="108.0" prefHeight="467.0" prefWidth="583.0" text="Label" textFill="WHITE">
+         <font>
+            <Font name="Arial" size="38.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="back_highscores" fitHeight="50.0" fitWidth="160.0" layoutX="730.0" layoutY="541.0">
+         <image>
+            <Image url="@images/back_not_pressed.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

@@ -4,7 +4,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="anchor" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.MainMenuController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="panzer.pkg2017.MainMenuController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="900.0">
          <image>
@@ -16,27 +16,27 @@
             <Image url="@images/option_selector.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="playImage" fitHeight="79.0" fitWidth="173.0" layoutX="529.0" layoutY="301.0">
+      <ImageView fx:id="GamePanel" fitHeight="79.0" fitWidth="173.0" layoutX="529.0" layoutY="301.0">
          <image>
             <Image url="@images/play_btn.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="settingsImage" fitHeight="62.0" fitWidth="200.0" layoutX="530.0" layoutY="365.0">
+      <ImageView fx:id="SettingsPanel" fitHeight="62.0" fitWidth="200.0" layoutX="530.0" layoutY="365.0">
          <image>
             <Image url="@images/settings_btn_1.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="helpImage" fitHeight="127.0" fitWidth="200.0" layoutX="516.0" layoutY="396.0">
+      <ImageView fx:id="HelpPanel" fitHeight="127.0" fitWidth="200.0" layoutX="516.0" layoutY="396.0">
          <image>
             <Image url="@images/help_btn_1.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="highscoreImage" fitHeight="41.0" fitWidth="200.0" layoutX="530.0" layoutY="472.0">
+      <ImageView fx:id="HighScorePanel" fitHeight="41.0" fitWidth="200.0" layoutX="530.0" layoutY="472.0">
          <image>
             <Image url="@images/high_score_btn_1.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="creditsImage" fitHeight="64.0" fitWidth="200.0" layoutX="529.0" layoutY="513.0">
+      <ImageView fx:id="CreditsPanel" fitHeight="64.0" fitWidth="200.0" layoutX="529.0" layoutY="513.0">
          <image>
             <Image url="@images/credits_btn_1.png" />
          </image>

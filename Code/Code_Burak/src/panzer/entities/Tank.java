@@ -19,23 +19,68 @@ import panzer.pkg2017.Panzer2017;
  */
 public class Tank extends GameObject{
     private int life;
-    private int speed;
     //Bullet this bullet 
-     Bullet myBullet;
-
-     
-    private int direction; // 0 up , 1 down , 2 left, 3 right 
+    Bullet myBullet;
+    int tank_speed;
+    boolean hasSuperBullet;
+    boolean iceBullet;
+    private boolean frozenState;
+    private int frozenStateDuration;
+    public int direction; // 0 up , 1 down , 2 left, 3 right 
     private boolean moving;
 
 
-    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life,int speed) {
+    public Tank(boolean _isAlive, float _coordinateX, float _coordinateY,int width, int height, int life) {
         super(_isAlive, _coordinateX, _coordinateY, width, height);  
         this.life = life;
-        this.speed=speed;
+        tank_speed = 1;
     }      
     
- 
+    public void setTank_speed(int tank_speed) {
+        this.tank_speed = tank_speed;
+    }
+    
+    public int getTank_speed() {
+        return tank_speed;
+    }
+    
+    public void setHasSuperBullet(boolean hasSuperBullet) {
+        this.hasSuperBullet = hasSuperBullet;
+    }
+    
+    public boolean hasSuperBullet() {
+        return hasSuperBullet;
+    }
+
+    public boolean hasIceBullet() {
+        return iceBullet;
+    }
+
+    public void setHasIceBullet(boolean iceBullet) {
+        this.iceBullet = iceBullet;
+    }
    
+      // sets the state of this enemy tank to frozen/ melted
+    public void setFrozenState(boolean  value){
+        frozenState = value;
+    }
+    
+    //returns frozen state
+    public boolean getFrozenState() {
+        return frozenState;
+    }
+    
+    public int getFrozenStateDuration() {
+        return frozenStateDuration;
+    }
+
+    public void incrementFrozenStateDuration() {
+        this.frozenStateDuration = 500000;
+    }
+    
+    public void decrementFrozenStateDuration() {
+        this.frozenStateDuration -= 1032 ;
+    }
     public Bullet getMyBullet() {
         return myBullet;
     }
@@ -60,64 +105,55 @@ public class Tank extends GameObject{
         myBullet = bull;
     }
     
-    public void feuer(GameEngine engine){
-        if(myBullet != null) return;
-                ArrayList<Image> iconList = new ArrayList<>();
-                iconList.add(new Image(Panzer2017.class.getResource("images/bullet.png").toExternalForm(),10,10,false,false));
-		Bullet bullet = new Bullet(true, getCoordinateX(), getCoordinateY(), 10,10, this, direction, 500);
-		engine.getAllObjectsList().add(bullet);
-		engine.getBulletList().add(bullet);
-		myBullet = bullet;
-                MediaPlayer mediaPlayer;
-                Media sound = new Media(MainMenuController.class.getResource("sound/shoot.mp3").toExternalForm());
-                mediaPlayer = new MediaPlayer(sound);  
-                mediaPlayer.play();
+    public void feuer(){
+        GameEngine.playSound("sound/shoot.mp3");
     }
     
     // below are motion methods
     public void moveUp(boolean released){
-      if(released){
+      if(released || frozenState){
             setSpeedY(0);
             //direction = 0;
-        }else{
+        }else   if(!frozenState){{
             direction = 0;
-            setSpeedY(-speed);
+            setSpeedY(-1*tank_speed);
             setSpeedX(0);
-           setImg(0);// up img
+            setImg(0);// up img
+          }
         }    
     }
     
     public void moveDown(boolean released){
-        if(released){
+        if(released || frozenState) {
             setSpeedY(0);
            // direction = 1;
-        }else{
+        }else  if(!frozenState){
             direction = 1;
-            setSpeedY(speed);
+            setSpeedY(1*tank_speed);
             setSpeedX(0);            
-           setImg(1);
-        }
+            setImg(1);
+            }
     }
     
     public void moveLeft(boolean released){
-        if(released){
+        if(released || frozenState){
             setSpeedX(0);
            // direction = 2;
-        }else{
-            direction = 2;
-            setSpeedX(-speed);
-            setSpeedY(0);
-            setImg(2); // left img
-        }
+        }else if(!frozenState){
+                direction = 2;
+                setSpeedX(-1*tank_speed);
+                setSpeedY(0);
+                setImg(2); // left img
+            }
     }
     
-    public void moveRight(boolean released){
-        if(released){
+    public void moveRight(boolean released){        
+        if(released || frozenState){
             setSpeedX(0);
            // direction = 3;
-        }else{
+        }else if(!frozenState){
             direction = 3;
-            setSpeedX(speed);
+            setSpeedX(1*tank_speed);
             setSpeedY(0);
             setImg(3); // left img
         }
