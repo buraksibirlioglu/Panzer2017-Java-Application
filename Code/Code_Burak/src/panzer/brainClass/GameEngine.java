@@ -61,6 +61,7 @@ public class GameEngine {
     ArrayList<Castle> castleList;
     static ArrayList<Bullet> bulletList;
     static ArrayList<GameObject> allObjectsList ; 
+    private ArrayList<Image> explosion = new ArrayList<>();
     Map map;
     Image imageEnemyCastle, imagePlayerCastle;    
     int points;
@@ -115,9 +116,18 @@ public class GameEngine {
         enemyTankList= createEnemyTankArrayList();
         bonusList = createBonusList();
         playerTank = new PlayerTank(true, 200, 200,38, 38,5);
-      
+        
         allObjectsList.add(playerTank);
         bulletList = new ArrayList<>();
+        
+        String adress="";
+        for(int i=24; i<=91; i++)
+        {
+            adress="images/explosion00"+i+".png";
+            System.out.println(adress);
+            explosion.add(new Image(Panzer2017.class.getResource(adress).toExternalForm(),380,380,false,false));
+        }
+        
         
         for (int i = 0; i < map.getBricks().size(); i++){
             allObjectsList.add(map.getBricks().get(i));
@@ -233,7 +243,7 @@ public class GameEngine {
         long enemyNanoTime = 0;   
         long previosTime1 = 0;
         long previosTimeBonus = 0;
-        
+        int ImageNo=0;
         
         @Override
         public void handle(long now) {
@@ -257,15 +267,41 @@ public class GameEngine {
           //enemyTank.update(1);
             drawBottomBar = false;
             keepPlayerTankWithinBounds();
-              for (int i = 0; i < enemyTankList.size();i++)
+            
+              for (int i = 0; i < enemyTankList.size();i++){
                   keepEnemyTankWithinBounds(enemyTankList.get(i));
+                  if(!enemyTankList.get(i).isAlive()){
+                        enemyTankList.get(i).setSpeedX(0);
+                        enemyTankList.get(i).setSpeedY(0);
+                        gc.drawImage(explosion.get(ImageNo), enemyTankList.get(i).getCoordinateX()-65, enemyTankList.get(i).getCoordinateY()-65,150,150);
+                        if(ImageNo>66){                           
+                            enemyTankList.remove(i);
+                            ImageNo=0;
+                        }
+                        ImageNo++;
+                  }
+                  if(!playerTank.isAlive())
+                  {
+                      playerTank.setSpeedX(0);
+                      playerTank.setSpeedY(0);
+                      gc.drawImage(explosion.get(ImageNo), playerTank.getCoordinateX()-65, playerTank.getCoordinateY()-65,150,150);
+                      if(ImageNo>66){                           
+                            allObjectsList.remove(0);
+                            ImageNo=0;
+                            timer.stop();
+                        }
+                        ImageNo++;
+                  }
+              }
+              
+              
             
             
             enemyNanoTime      += System.nanoTime() - oldNanoTime;
             previosTimeBonus += System.nanoTime() - oldNanoTime;
             oldNanoTime = System.nanoTime(); // update old nano time
             if(enemyNanoTime / 1000000.0 > 2000){ 
-                for (int i = 0; i < enemyTankList.size();i++) {  
+                for (int i = 0; i < enemyTankList.size();i++) {                   
                     if(!playerOnSight(enemyTankList.get(i)))
                         findARoute(enemyTankList.get(i));//  
                 }
@@ -666,7 +702,7 @@ public class GameEngine {
                                 b.setSpeedY(0);
                                 System.out.println("shotttt Enemy");                       
                                 EnemyTank t = (EnemyTank)obj2;
-                                allObjectsList.remove(i);
+                                //allObjectsList.remove(i);
                                 if(t.getLife() >=1){                                    
                                     System.out.println("LIFE = "+ t.getLife());
                                     t.setLife(t.getLife()-1);// decrement life
@@ -680,7 +716,8 @@ public class GameEngine {
                                         allObjectsList.remove(j);
                                         for(int m = 0; m<enemyTankList.size();m++){
                                             if(!enemyTankList.get(m).isAlive()){
-                                                enemyTankList.remove(m);
+                                                //enemyTankList.remove(m);
+                                                
                                             }
                                         }
                                         Bonus coin = new  CoinsBonus(true, posX, posY, 38, 38, enemyType);                                        
@@ -735,11 +772,12 @@ public class GameEngine {
                                         playSound(BULLET_COLLIDE_PLAYER);
                                     } 
                                     if(t.getLife()==0){
-                                        allObjectsList.remove(j);
+                                        //allObjectsList.remove(j);
+                                        System.out.println(j+"jjjjjj");
                                         t.setAlive(false);
                                         System.err.println("Shot by enemy and DIED!!");
                                         playSound(GAME_LOST);
-                                        timer.stop();
+                                        
                                         System.out.println("----------->"+ false);
                                         showDialog( false, level);      
                                     } 
@@ -1040,5 +1078,10 @@ public class GameEngine {
     
     public static void setExit( boolean value){
         exit = value;
+    }
+
+    public void playAnimation(EnemyTank t)
+    {
+        System.out.println(System.currentTimeMillis());
     }
 }
