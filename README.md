@@ -1,6 +1,9 @@
 # PANZER2017
 CS 319 Term Project | Fall 2017 Bilkent University
 
+# GAMEPLAY:
+[![image](https://user-images.githubusercontent.com/18335489/102631181-bb901000-414d-11eb-997c-ebae94ad9572.png)](https://www.youtube.com/watch?v=oAYIy5GiPjw&feature=youtu.be)
+
 
 Instructor: Bora Güngören 
 
